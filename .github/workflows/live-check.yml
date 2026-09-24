@@ -1,0 +1,59 @@
+name: Live check
+
+# Checks what this showcase promises from the outside: the live app answers,
+# keeps its security headers and keeps boards private; the project page and
+# every image it references are there. Read-only, no secrets, nothing deploys.
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 6 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      APP: https://project-board.majkeylab.workers.dev
+      PAGE: https://majkey25.github.io/project-board-showcase/
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Every referenced image exists
+        run: |
+          missing=0
+          for path in $(grep -ohE 'assets/[A-Za-z0-9._-]+' README.md index.html | sort -u); do
+            [ -f "$path" ] || { echo "::error::missing $path"; missing=1; }
+          done
+          exit $missing
+
+      - name: Live app answers
+        run: |
+          curl -fsS "$APP/api/health" | grep -q '"ok":true'
+          curl -fsS "$APP/api/config" | grep -q '"ready":true'
+          echo "health and config OK"
+
+      - name: Live app keeps its security headers
+        run: |
+          headers=$(curl -fsSI "$APP/")
+          for header in content-security-policy strict-transport-security x-content-type-options x-frame-options; do
+            echo "$headers" | grep -qi "^$header:" || { echo "::error::missing $header"; exit 1; }
+          done
+          echo "security headers OK"
+
+      - name: Boards stay private without sign-in
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' "$APP/api/boards")
+          [ "$status" = "401" ] || { echo "::error::expected 401, got $status"; exit 1; }
+          echo "anonymous board list refused with 401"
+
+      - name: Project page and link preview are published
+        run: |
+          curl -fsS "$PAGE" | grep -q 'og:image'
+          curl -fsS -o /dev/null "${PAGE}assets/og-image.png"
+          echo "project page and preview image OK"

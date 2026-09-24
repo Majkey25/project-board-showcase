@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Project board — projects by phase, versions by environment</title>
-  <meta name="description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed. GitHub pull requests, automations, custom notifications and an agent API.">
+  <meta name="description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed. GitHub pull requests, automations, custom notifications, Project Guard and an agent API.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#246750">
   <meta property="og:type" content="website">
@@ -17,91 +17,243 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Project board: projects in workflow columns, with their deployed versions.">
   <meta name="twitter:card" content="summary_large_image">
+  <script>document.documentElement.classList.add('js')</script>
   <style>
     :root {
       --accent: #246750; --on-accent: #fff; --bg: #f7f8f5; --surface: #fff; --text: #233a36; --muted: #596e65; --border: #d9e2da;
-      --soft: #e6efe9; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: var(--text); background: var(--bg); line-height: 1.55;
+      --soft: #e6efe9; --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: var(--text); background: var(--bg); line-height: 1.55;
     }
     @media (prefers-color-scheme: dark) {
       :root { --accent: #5cc79f; --on-accent: #0b1f17; --bg: #0f1714; --surface: #16211d; --text: #e6f0ec; --muted: #9fb5ab; --border: #2c3d36; --soft: #1c2b25; }
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body { margin: 0; }
     a { color: var(--accent); }
     .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
     header.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; }
     .brand { display: inline-flex; align-items: center; gap: 0.625rem; font-weight: 700; font-size: 1.125rem; color: var(--text); text-decoration: none; }
     .brand img { width: 2.25rem; height: 2.25rem; }
-    .hero { display: grid; gap: 2rem; padding: 2.5rem 0 3rem; }
+    .top-links { display: flex; align-items: center; gap: 0.75rem; }
+    .status { display: inline-flex; align-items: center; gap: 0.5rem; font: 500 0.8125rem var(--mono); color: var(--muted); text-decoration: none; }
+    .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2ea44f; box-shadow: 0 0 0 0 rgb(46 164 79 / 0.5); animation: pulse 2.4s infinite; }
+    @keyframes pulse { 70% { box-shadow: 0 0 0 0.5rem rgb(46 164 79 / 0); } 100% { box-shadow: 0 0 0 0 rgb(46 164 79 / 0); } }
+    .hero { display: grid; gap: 2rem; padding: 2.5rem 0 1.5rem; }
     .hero h1 { margin: 0; font-size: clamp(2.25rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; }
     .hero p.lead { margin: 0; max-width: 44rem; font-size: 1.1875rem; color: var(--muted); }
     .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-    .button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.625rem 1.25rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; text-decoration: none; }
+    .button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.625rem 1.25rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; text-decoration: none; transition: transform .2s ease, filter .2s ease; }
     .button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-    .button:hover { filter: brightness(0.96); }
-    .shot { width: 100%; border-radius: 1rem; border: 1px solid var(--border); box-shadow: 0 8px 28px rgb(0 0 0 / 0.12); display: block; }
-    section { padding: 2.5rem 0; }
-    h2 { font-size: 1.75rem; margin: 0 0 1.25rem; letter-spacing: -0.01em; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+    .button:hover { filter: brightness(0.96); transform: translateY(-1px); }
+    .shot { width: 100%; border-radius: 1rem; border: 1px solid var(--border); box-shadow: 0 8px 28px rgb(0 0 0 / 0.12); display: block; transition: transform .35s ease, box-shadow .35s ease; }
+    .shot:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgb(0 0 0 / 0.16); }
+    .hero .shot { animation: rise .9s ease both .15s; }
+    @keyframes rise { from { opacity: 0; transform: translateY(24px) scale(.985); } }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1px; margin: 2rem 0 0; border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; background: var(--border); }
+    .stats div { padding: 1rem 1.25rem; background: var(--surface); }
+    .stats strong { display: block; font-size: 1.5rem; letter-spacing: -0.01em; }
+    .stats span { color: var(--muted); font-size: 0.875rem; }
+    section { padding: 3rem 0; }
+    h2 { font-size: 1.75rem; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
+    .section-lead { margin: 0 0 2rem; color: var(--muted); max-width: 40rem; }
+    .eyebrow { display: block; margin-bottom: 0.5rem; font: 600 0.8125rem var(--mono); letter-spacing: 0.04em; color: var(--accent); }
+    .feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 3rem; align-items: center; padding: 2.5rem 0; border-top: 1px solid var(--border); }
+    .feature:nth-of-type(even) { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+    .feature:nth-of-type(even) .text { order: 2; }
+    .feature h3 { margin: 0 0 0.625rem; font-size: 1.5rem; letter-spacing: -0.01em; line-height: 1.25; }
+    .feature p { margin: 0 0 1rem; color: var(--muted); }
+    .feature ul { margin: 0; padding-left: 1.125rem; display: grid; gap: 0.375rem; font-size: 0.9375rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
     .card { padding: 1.25rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); }
-    .card h3 { margin: 0 0 0.375rem; font-size: 1.0625rem; }
+    .card h4 { margin: 0 0 0.375rem; font-size: 1rem; }
     .card p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
-    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.5rem; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; }
     figure { margin: 0; }
     figcaption { margin-top: 0.5rem; color: var(--muted); font-size: 0.9375rem; }
-    .split { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: 2rem; align-items: center; }
-    .split img { width: 100%; border-radius: 1.5rem; border: 1px solid var(--border); }
-    ul.points { margin: 0; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: 3rem; align-items: center; }
+    .split > img { width: 100%; border-radius: 1.5rem; border: 1px solid var(--border); }
+    ul.points { margin: 0 0 1.25rem; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
+    .badges { display: flex; flex-wrap: wrap; gap: 0.375rem; }
+    .badges img { height: 20px; width: auto; }
     footer { padding: 2rem 0 3rem; color: var(--muted); font-size: 0.9375rem; border-top: 1px solid var(--border); }
-    @media (max-width: 720px) { .split { grid-template-columns: 1fr; } .split img { max-width: 18rem; } }
+    .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+    .js .reveal.in { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .js .reveal { opacity: 1; transform: none; }
+    }
+    @media (max-width: 820px) {
+      .feature, .feature:nth-of-type(even) { grid-template-columns: 1fr; gap: 1.5rem; }
+      .feature:nth-of-type(even) .text { order: 0; }
+      .split { grid-template-columns: 1fr; } .split > img { max-width: 18rem; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header class="top">
       <a class="brand" href="./"><img src="assets/favicon.svg" alt="">Project board</a>
-      <a class="button" href="https://github.com/Majkey25/project-board-showcase">GitHub</a>
+      <div class="top-links">
+        <a class="status" href="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml" title="Checked daily from GitHub Actions"><i></i>live</a>
+        <a class="button" href="https://github.com/Majkey25/project-board-showcase">GitHub</a>
+      </div>
     </header>
 
     <div class="hero">
       <h1>Projects by phase.<br>Versions by environment.</h1>
-      <p class="lead">A private project board where each project is one card moving through your own workflow, while its target, test and production versions stay visible on their own. Linked to GitHub, with automations, custom notifications and an API for AI agents.</p>
+      <p class="lead">A private project board where each project is one card moving through your own workflow, while its target, test and production versions stay visible on their own. Linked to GitHub, with automations, custom notifications, a GitHub audit tool and an API for AI agents.</p>
       <div class="cta">
         <a class="button primary" href="https://project-board.majkeylab.workers.dev">Open the live app</a>
-        <a class="button" href="#screens">See the screens</a>
+        <a class="button" href="#features">Explore the features</a>
       </div>
       <img class="shot" src="assets/board.png" alt="The board with projects across planning, development, testing and fixes">
+      <div class="stats">
+        <div><strong>4</strong><span>roles, owner to viewer</span></div>
+        <div><strong>12</strong><span>notification events</span></div>
+        <div><strong>6 × 2</strong><span>themes, light and dark</span></div>
+        <div><strong>EN · CS</strong><span>interface languages</span></div>
+        <div><strong>AES-256</strong><span>content encrypted at rest</span></div>
+      </div>
     </div>
 
-    <section>
-      <h2>What it does</h2>
-      <div class="grid">
-        <div class="card"><h3>A real overview</h3><p>Status, next step, owner, due date, versions and checklist progress, readable at a glance.</p></div>
-        <div class="card"><h3>GitHub, per person</h3><p>Pull requests, issues and branches of linked repositories — each person sees only what their own GitHub account can.</p></div>
-        <div class="card"><h3>Automations</h3><p>When a project enters a column, a quick action runs on it by itself, in the same safe write as the move.</p></div>
-        <div class="card"><h3>Custom notifications</h3><p>Choose exactly which events notify you, optionally only for projects assigned to you.</p></div>
-        <div class="card"><h3>Project Guard</h3><p>Audits your accessible issues and pull requests against your rules and prepares changes you review first.</p></div>
-        <div class="card"><h3>Agents and AI</h3><p>Scoped, expiring API tokens for AI agents and scripts, and AI assistance with your own OpenAI or Azure key.</p></div>
-        <div class="card"><h3>Roles and sharing</h3><p>Owner, administrator, editor and viewer, invitations by username or link, with limits and revocation.</p></div>
-        <div class="card"><h3>Made to be used</h3><p>Six themes in light and dark, English and Czech, hover hints on every control, works on phones and installs as an app.</p></div>
+    <section id="features">
+      <h2 class="reveal">Everything a project needs, in one card</h2>
+      <p class="section-lead reveal">Each part of the product, in the order you meet it.</p>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">01 — Board</span>
+          <h3>Your workflow, your columns</h3>
+          <p>Columns follow the way your team works, and each one is mapped to a stage such as planning, development, testing, production or done.</p>
+          <ul><li>Drag and drop, or move cards from the keyboard</li><li>Search and filter by person, priority, tier or blocked state</li><li>Order by hand or by priority; blocked work stands out</li></ul>
+        </div>
+        <img class="shot" src="assets/board-dark.png" alt="The board in the dark Midnight theme" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">02 — Overview</span>
+          <h3>The state of a project at a glance</h3>
+          <p>Opening a project shows what matters first: where it is, what happens next, who owns it and when it is due.</p>
+          <ul><li>Next step, priority, owner, due date with an overdue flag</li><li>Target, test and production versions side by side</li><li>Checklist progress and a full change history</li></ul>
+        </div>
+        <img class="shot" src="assets/overview.png" alt="Project overview with status, next step, facts and checklist" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">03 — Editing</span>
+          <h3>Everything about a project, in one form</h3>
+          <p>Summary, description, versions, checklist, custom fields, tiers and ratings, with unsaved changes kept while you switch tabs.</p>
+          <ul><li>Conflict-safe saving when two people edit at once</li><li>Archive and restore instead of losing work</li><li>Notes for the whole board, separate from private data</li></ul>
+        </div>
+        <img class="shot" src="assets/edit.png" alt="The edit tab of a project" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">04 — GitHub</span>
+          <h3>Pull requests, issues and branches, per person</h3>
+          <p>Link repositories to a project and see what is open against it. Every visitor sees only what their own GitHub account can see.</p>
+          <ul><li>Open and draft pull requests, issues, labels and activity</li><li>Branches with their protection status</li><li>Counts on each card; issues and PRs can be linked to projects</li></ul>
+        </div>
+        <img class="shot" src="assets/overview-github.png" alt="Open pull requests and issues of a linked repository" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">05 — Automations</span>
+          <h3>Quick actions that run by themselves</h3>
+          <p>A quick action applies several changes at once. An automation runs one whenever a project enters a chosen column.</p>
+          <ul><li>Move, set priority, tier, rating, blocking or archive in one step</li><li>Runs in the same write as the move, with history</li><li>Rules never chain, so nothing loops</li></ul>
+        </div>
+        <img class="shot" src="assets/automations.png" alt="Quick actions and automations in board customization" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">06 — Notifications</span>
+          <h3>Hear about exactly what you care about</h3>
+          <p>Choose between all changes, finished projects, or a custom set of events — optionally only for projects assigned to you.</p>
+          <ul><li>Added, edited, moved, done, blocked, unblocked</li><li>Assigned to you, taken off you, due date changed</li><li>Archived, restored, deleted; browser alerts hide details</li></ul>
+        </div>
+        <img class="shot" src="assets/notifications.png" alt="Custom notification settings" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">07 — Project Guard</span>
+          <h3>Audit your GitHub work against your rules</h3>
+          <p>Guard reads the issues and pull requests you can access and reports the ones missing what you require: an owner, a project, an estimate.</p>
+          <ul><li>Scans repositories and GitHub Projects with your own access</li><li>Prepares changes you review before anything is applied</li><li>Personal: results and proposals are never shared</li></ul>
+        </div>
+        <img class="shot" src="assets/guard.png" alt="Project Guard scan scope and rules" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">08 — Agent access</span>
+          <h3>A safe door for AI agents and scripts</h3>
+          <p>Create scoped, expiring API tokens so an agent can read or update one board — never with more rights than the person who created it.</p>
+          <ul><li>Read-only by default; write, propose and merge are opt-in</li><li>Documented API with machine-readable context</li><li>Every agent change is recorded; revocation is immediate</li></ul>
+        </div>
+        <img class="shot" src="assets/agents.png" alt="Agent access token settings" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">09 — AI assistance</span>
+          <h3>Ask about your board with your own model</h3>
+          <p>Connect your own OpenAI or Azure OpenAI account. You choose the context; nothing is sent just by opening a board.</p>
+          <ul><li>Keys encrypted on the server, never returned to the browser</li><li>Suggestions stay proposals until you apply them</li><li>Local models through the companion for Ollama</li></ul>
+        </div>
+        <img class="shot" src="assets/assistant.png" alt="AI assistance model settings" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">10 — Sharing</span>
+          <h3>Roles that make sense</h3>
+          <p>Owner, administrator, editor and viewer. Administrators can do everything except delete the board or change who owns it.</p>
+          <ul><li>Invite by GitHub username or with a link</li><li>Links with expiry, use limits and revocation</li><li>Ownership transfer when a project changes hands</li></ul>
+        </div>
+        <img class="shot" src="assets/access.png" alt="Manage access with roles" loading="lazy">
+      </div>
+
+      <div class="feature reveal">
+        <div class="text">
+          <span class="eyebrow">11 — Yours</span>
+          <h3>Preferences that follow you</h3>
+          <p>Language, sync interval, themes and hints are saved to your account and apply on every device.</p>
+          <ul><li>Six themes, each in light and dark, plus a custom one</li><li>Hover hints on every control, in your language</li><li>Your own GitHub token, used only for your requests</li></ul>
+        </div>
+        <img class="shot" src="assets/account.png" alt="Account preferences and GitHub token" loading="lazy">
       </div>
     </section>
 
-    <section id="screens">
-      <h2>Screens</h2>
-      <div class="gallery">
-        <figure><img class="shot" src="assets/overview.png" alt="Project overview with status, next step, facts and checklist" loading="lazy"><figcaption>Project overview</figcaption></figure>
-        <figure><img class="shot" src="assets/overview-github.png" alt="Open pull requests and issues of a linked repository" loading="lazy"><figcaption>Pull requests and issues on a project</figcaption></figure>
-        <figure><img class="shot" src="assets/board-dark.png" alt="The board in the dark Midnight theme" loading="lazy"><figcaption>Dark theme</figcaption></figure>
-        <figure><img class="shot" src="assets/notifications.png" alt="Custom notification settings" loading="lazy"><figcaption>Custom notifications</figcaption></figure>
-        <figure><img class="shot" src="assets/automations.png" alt="Automations in board customization" loading="lazy"><figcaption>Automations</figcaption></figure>
+    <section>
+      <h2 class="reveal">Also included</h2>
+      <p class="section-lead reveal">The details that make it usable every day.</p>
+      <div class="grid reveal">
+        <div class="card"><h4>Custom fields, tiers and ratings</h4><p>Shape projects to your process, shown on cards where you want them.</p></div>
+        <div class="card"><h4>Export and import</h4><p>Take a board out as JSON and bring it back, with permission and schema checks.</p></div>
+        <div class="card"><h4>Automatic sync</h4><p>Open boards pick up changes from others at an interval you choose.</p></div>
+        <div class="card"><h4>Works on phones</h4><p>Responsive layout, touch-friendly controls, installable as an app.</p></div>
+        <div class="card"><h4>Accessible by design</h4><p>Keyboard moves, focus handling, reduced-motion support and readable contrast in every theme.</p></div>
+        <div class="card"><h4>Clear terms</h4><p>Consent is recorded at sign-in; changes are refused until the current terms are accepted.</p></div>
+      </div>
+      <div class="gallery reveal" style="margin-top: 1.5rem">
+        <figure><img class="shot" src="assets/branches.png" alt="Branches of a linked repository with protection" loading="lazy"><figcaption>Branches and their protection</figcaption></figure>
+        <figure><img class="shot" src="assets/customize.png" alt="Custom fields in board customization" loading="lazy"><figcaption>Custom fields</figcaption></figure>
         <figure><img class="shot" src="assets/hint.png" alt="A hover hint explaining a card" loading="lazy"><figcaption>Hints in the app's language</figcaption></figure>
       </div>
       <p><small>All screens show a synthetic demo board.</small></p>
     </section>
 
     <section>
-      <div class="split">
+      <div class="split reveal">
         <div>
           <h2>Built carefully</h2>
           <ul class="points">
@@ -109,8 +261,18 @@
             <li>Board content encrypted at rest with AES-256-GCM, keys kept outside the database.</li>
             <li>GitHub tokens encrypted and never returned to the browser; every GitHub read uses the visitor's own access.</li>
             <li>Strict Content Security Policy, HSTS, same-origin checks, rate limits and database-level write guards.</li>
-            <li>Hundreds of automated tests, a browser end-to-end suite, CI on every change, and rehearsed encrypted backups.</li>
+            <li>Every change passes secret scanning, lint, type checks, backend and browser tests, backup checks and a dependency audit.</li>
           </ul>
+          <div class="badges">
+            <img alt="Live check" src="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml/badge.svg">
+            <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black">
+            <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white">
+            <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white">
+            <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1-F38020?logo=cloudflare&logoColor=white">
+            <img alt="Vitest" src="https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white">
+            <img alt="Playwright" src="https://img.shields.io/badge/e2e-Playwright-2EAD33">
+            <img alt="Material 3" src="https://img.shields.io/badge/design-Material%203-6750A4?logo=materialdesign&logoColor=white">
+          </div>
         </div>
         <img src="assets/mobile.png" alt="The board on a phone" loading="lazy">
       </div>
@@ -121,5 +283,12 @@
       <p>Made by <a href="https://github.com/Majkey25">Matěj Teplý</a>.</p>
     </footer>
   </div>
+  <script>
+    // Fade sections in as they scroll into view; content is visible without it.
+    const seen = new IntersectionObserver((entries) => entries.forEach((entry) => {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); seen.unobserve(entry.target) }
+    }), { rootMargin: '0px 0px -8% 0px' })
+    document.querySelectorAll('.reveal').forEach((element) => seen.observe(element))
+  </script>
 </body>
 </html>
