@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project board — projects by phase, versions by environment</title>
+  <meta name="description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed. GitHub pull requests, automations, custom notifications and an agent API.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#246750">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Project board">
+  <meta property="og:title" content="Project board">
+  <meta property="og:description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed.">
+  <meta property="og:url" content="https://majkey25.github.io/project-board-showcase/">
+  <meta property="og:image" content="https://majkey25.github.io/project-board-showcase/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Project board: projects in workflow columns, with their deployed versions.">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    :root {
+      --accent: #246750; --on-accent: #fff; --bg: #f7f8f5; --surface: #fff; --text: #233a36; --muted: #596e65; --border: #d9e2da;
+      --soft: #e6efe9; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: var(--text); background: var(--bg); line-height: 1.55;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --accent: #5cc79f; --on-accent: #0b1f17; --bg: #0f1714; --surface: #16211d; --text: #e6f0ec; --muted: #9fb5ab; --border: #2c3d36; --soft: #1c2b25; }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: var(--accent); }
+    .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
+    header.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; }
+    .brand { display: inline-flex; align-items: center; gap: 0.625rem; font-weight: 700; font-size: 1.125rem; color: var(--text); text-decoration: none; }
+    .brand img { width: 2.25rem; height: 2.25rem; }
+    .hero { display: grid; gap: 2rem; padding: 2.5rem 0 3rem; }
+    .hero h1 { margin: 0; font-size: clamp(2.25rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; }
+    .hero p.lead { margin: 0; max-width: 44rem; font-size: 1.1875rem; color: var(--muted); }
+    .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+    .button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.625rem 1.25rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; text-decoration: none; }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+    .button:hover { filter: brightness(0.96); }
+    .shot { width: 100%; border-radius: 1rem; border: 1px solid var(--border); box-shadow: 0 8px 28px rgb(0 0 0 / 0.12); display: block; }
+    section { padding: 2.5rem 0; }
+    h2 { font-size: 1.75rem; margin: 0 0 1.25rem; letter-spacing: -0.01em; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+    .card { padding: 1.25rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); }
+    .card h3 { margin: 0 0 0.375rem; font-size: 1.0625rem; }
+    .card p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr)); gap: 1.5rem; }
+    figure { margin: 0; }
+    figcaption { margin-top: 0.5rem; color: var(--muted); font-size: 0.9375rem; }
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: 2rem; align-items: center; }
+    .split img { width: 100%; border-radius: 1.5rem; border: 1px solid var(--border); }
+    ul.points { margin: 0; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
+    footer { padding: 2rem 0 3rem; color: var(--muted); font-size: 0.9375rem; border-top: 1px solid var(--border); }
+    @media (max-width: 720px) { .split { grid-template-columns: 1fr; } .split img { max-width: 18rem; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="./"><img src="assets/favicon.svg" alt="">Project board</a>
+      <a class="button" href="https://github.com/Majkey25/project-board-showcase">GitHub</a>
+    </header>
+
+    <div class="hero">
+      <h1>Projects by phase.<br>Versions by environment.</h1>
+      <p class="lead">A private project board where each project is one card moving through your own workflow, while its target, test and production versions stay visible on their own. Linked to GitHub, with automations, custom notifications and an API for AI agents.</p>
+      <div class="cta">
+        <a class="button primary" href="https://project-board.majkeylab.workers.dev">Open the live app</a>
+        <a class="button" href="#screens">See the screens</a>
+      </div>
+      <img class="shot" src="assets/board.png" alt="The board with projects across planning, development, testing and fixes">
+    </div>
+
+    <section>
+      <h2>What it does</h2>
+      <div class="grid">
+        <div class="card"><h3>A real overview</h3><p>Status, next step, owner, due date, versions and checklist progress, readable at a glance.</p></div>
+        <div class="card"><h3>GitHub, per person</h3><p>Pull requests, issues and branches of linked repositories — each person sees only what their own GitHub account can.</p></div>
+        <div class="card"><h3>Automations</h3><p>When a project enters a column, a quick action runs on it by itself, in the same safe write as the move.</p></div>
+        <div class="card"><h3>Custom notifications</h3><p>Choose exactly which events notify you, optionally only for projects assigned to you.</p></div>
+        <div class="card"><h3>Project Guard</h3><p>Audits your accessible issues and pull requests against your rules and prepares changes you review first.</p></div>
+        <div class="card"><h3>Agents and AI</h3><p>Scoped, expiring API tokens for AI agents and scripts, and AI assistance with your own OpenAI or Azure key.</p></div>
+        <div class="card"><h3>Roles and sharing</h3><p>Owner, administrator, editor and viewer, invitations by username or link, with limits and revocation.</p></div>
+        <div class="card"><h3>Made to be used</h3><p>Six themes in light and dark, English and Czech, hover hints on every control, works on phones and installs as an app.</p></div>
+      </div>
+    </section>
+
+    <section id="screens">
+      <h2>Screens</h2>
+      <div class="gallery">
+        <figure><img class="shot" src="assets/overview.png" alt="Project overview with status, next step, facts and checklist" loading="lazy"><figcaption>Project overview</figcaption></figure>
+        <figure><img class="shot" src="assets/overview-github.png" alt="Open pull requests and issues of a linked repository" loading="lazy"><figcaption>Pull requests and issues on a project</figcaption></figure>
+        <figure><img class="shot" src="assets/board-dark.png" alt="The board in the dark Midnight theme" loading="lazy"><figcaption>Dark theme</figcaption></figure>
+        <figure><img class="shot" src="assets/notifications.png" alt="Custom notification settings" loading="lazy"><figcaption>Custom notifications</figcaption></figure>
+        <figure><img class="shot" src="assets/automations.png" alt="Automations in board customization" loading="lazy"><figcaption>Automations</figcaption></figure>
+        <figure><img class="shot" src="assets/hint.png" alt="A hover hint explaining a card" loading="lazy"><figcaption>Hints in the app's language</figcaption></figure>
+      </div>
+      <p><small>All screens show a synthetic demo board.</small></p>
+    </section>
+
+    <section>
+      <div class="split">
+        <div>
+          <h2>Built carefully</h2>
+          <ul class="points">
+            <li>React 19, strict TypeScript and Material Design 3 on the front; a Cloudflare Worker with D1 behind it.</li>
+            <li>Board content encrypted at rest with AES-256-GCM, keys kept outside the database.</li>
+            <li>GitHub tokens encrypted and never returned to the browser; every GitHub read uses the visitor's own access.</li>
+            <li>Strict Content Security Policy, HSTS, same-origin checks, rate limits and database-level write guards.</li>
+            <li>Hundreds of automated tests, a browser end-to-end suite, CI on every change, and rehearsed encrypted backups.</li>
+          </ul>
+        </div>
+        <img src="assets/mobile.png" alt="The board on a phone" loading="lazy">
+      </div>
+    </section>
+
+    <footer>
+      <p>Project board is proprietary; the source code is private. This page and its screenshots are © 2026 Matěj Teplý, all rights reserved — see the <a href="https://github.com/Majkey25/project-board-showcase/blob/main/LICENSE">licence</a>.</p>
+      <p>Made by <a href="https://github.com/Majkey25">Matěj Teplý</a>.</p>
+    </footer>
+  </div>
+</body>
+</html>
