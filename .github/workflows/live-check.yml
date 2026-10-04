@@ -30,6 +30,12 @@ jobs:
           for path in $(grep -ohE 'assets/[A-Za-z0-9._-]+' README.md index.html | sort -u); do
             [ -f "$path" ] || { echo "::error::missing $path"; missing=1; }
           done
+          # The theme explorer builds these names in script, so check every combination.
+          for theme in original minimal material gradient midnight matrix custom; do
+            for scheme in light dark; do
+              [ -f "assets/theme-$theme-$scheme.webp" ] || { echo "::error::missing assets/theme-$theme-$scheme.webp"; missing=1; }
+            done
+          done
           exit $missing
 
       - name: Live app answers

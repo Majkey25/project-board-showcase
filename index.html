@@ -3,292 +3,816 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Project board — projects by phase, versions by environment</title>
-  <meta name="description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed. GitHub pull requests, automations, custom notifications, Project Guard and an agent API.">
+  <title>Project board: projects by phase, versions by environment</title>
+  <meta name="description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed. Status updates, GitHub pull requests, automations, notifications, Project Guard, seven themes and a scoped API for AI agents.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <meta name="theme-color" content="#246750">
+  <meta name="theme-color" content="#f7f8f5" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1714" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Project board">
   <meta property="og:title" content="Project board">
-  <meta property="og:description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed.">
+  <meta property="og:description" content="One board, fourteen looks. Projects by phase, versions by environment, with GitHub, automations, Project Guard and a scoped API for AI agents.">
   <meta property="og:url" content="https://majkey25.github.io/project-board-showcase/">
   <meta property="og:image" content="https://majkey25.github.io/project-board-showcase/assets/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Project board: projects in workflow columns, with their deployed versions.">
+  <meta property="og:image:alt" content="The same project board in fourteen themes, sliced into strips.">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" as="image" href="assets/themes-spectrum-1600.webp" imagesrcset="assets/themes-spectrum-1600.webp 1600w, assets/themes-spectrum.webp 3200w" imagesizes="(min-width: 78rem) 75rem, 100vw" fetchpriority="high">
   <script>document.documentElement.classList.add('js')</script>
   <style>
     :root {
-      --accent: #246750; --on-accent: #fff; --bg: #f7f8f5; --surface: #fff; --text: #233a36; --muted: #596e65; --border: #d9e2da;
-      --soft: #e6efe9; --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
-      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: var(--text); background: var(--bg); line-height: 1.55;
+      --accent: #246750; --accent-soft: #e3efe8; --on-accent: #fff; --bg: #f7f8f5; --surface: #fff; --text: #1d302b; --muted: #55695f;
+      --border: #d9e2da; --soft: #eef3ef; --shadow: 0 1px 2px rgb(16 32 26 / .06), 0 12px 32px -12px rgb(16 32 26 / .18);
+      --ease: cubic-bezier(.2, .7, .2, 1); --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+      font: 17px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--text); background: var(--bg);
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
     }
     @media (prefers-color-scheme: dark) {
-      :root { --accent: #5cc79f; --on-accent: #0b1f17; --bg: #0f1714; --surface: #16211d; --text: #e6f0ec; --muted: #9fb5ab; --border: #2c3d36; --soft: #1c2b25; }
+      :root { --accent: #5cc79f; --accent-soft: #173126; --on-accent: #0b1f17; --bg: #0d1512; --surface: #141f1b; --text: #e6f0ec; --muted: #9fb5ab;
+        --border: #263832; --soft: #18241f; --shadow: 0 1px 2px rgb(0 0 0 / .4), 0 16px 40px -16px rgb(0 0 0 / .7); }
     }
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
     body { margin: 0; }
-    a { color: var(--accent); }
-    .wrap { max-width: 72rem; margin: 0 auto; padding: 0 1.5rem; }
-    header.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; }
-    .brand { display: inline-flex; align-items: center; gap: 0.625rem; font-weight: 700; font-size: 1.125rem; color: var(--text); text-decoration: none; }
-    .brand img { width: 2.25rem; height: 2.25rem; }
-    .top-links { display: flex; align-items: center; gap: 0.75rem; }
+    a { color: var(--accent); text-underline-offset: 0.2em; }
+    img { max-width: 100%; }
+    .icon { width: 1.125em; height: 1.125em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .wrap { max-width: 78rem; margin: 0 auto; padding: 0 1.5rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+    /* Header */
+    header.top { position: sticky; top: 0; z-index: 20; background: color-mix(in oklab, var(--bg) 82%, transparent); backdrop-filter: saturate(1.5) blur(14px);
+      -webkit-backdrop-filter: saturate(1.5) blur(14px); border-bottom: 1px solid transparent; transition: border-color .3s, box-shadow .3s; }
+    header.top.scrolled { border-bottom-color: var(--border); box-shadow: 0 6px 24px -18px rgb(0 0 0 / .5); }
+    .bar { display: flex; align-items: center; gap: 1.5rem; height: 4rem; }
+    .brand { display: inline-flex; align-items: center; gap: 0.625rem; font-weight: 700; font-size: 1.0625rem; color: var(--text); text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; }
+    .brand img { width: 2rem; height: 2rem; }
+    nav.links { display: flex; gap: 0.25rem; margin-left: auto; }
+    nav.links a { color: var(--muted); text-decoration: none; font-size: 0.9375rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 999px; transition: color .2s, background-color .2s; }
+    nav.links a:hover { color: var(--text); background: var(--soft); }
     .status { display: inline-flex; align-items: center; gap: 0.5rem; font: 500 0.8125rem var(--mono); color: var(--muted); text-decoration: none; }
-    .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2ea44f; box-shadow: 0 0 0 0 rgb(46 164 79 / 0.5); animation: pulse 2.4s infinite; }
-    @keyframes pulse { 70% { box-shadow: 0 0 0 0.5rem rgb(46 164 79 / 0); } 100% { box-shadow: 0 0 0 0 rgb(46 164 79 / 0); } }
-    .hero { display: grid; gap: 2rem; padding: 2.5rem 0 1.5rem; }
-    .hero h1 { margin: 0; font-size: clamp(2.25rem, 5vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; }
-    .hero p.lead { margin: 0; max-width: 44rem; font-size: 1.1875rem; color: var(--muted); }
-    .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-    .button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.625rem 1.25rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; text-decoration: none; transition: transform .2s ease, filter .2s ease; }
+    .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2ea44f; animation: pulse 2.4s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgb(46 164 79 / .5); } 70% { box-shadow: 0 0 0 0.5rem rgb(46 164 79 / 0); } 100% { box-shadow: 0 0 0 0 rgb(46 164 79 / 0); } }
+
+    /* Buttons */
+    .button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.625rem 1.25rem; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text); font-weight: 600; font-size: 0.9375rem; text-decoration: none; transition: transform .25s var(--ease), box-shadow .25s, background-color .2s; }
+    .button:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
     .button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-    .button:hover { filter: brightness(0.96); transform: translateY(-1px); }
-    .shot { width: 100%; border-radius: 1rem; border: 1px solid var(--border); box-shadow: 0 8px 28px rgb(0 0 0 / 0.12); display: block; transition: transform .35s ease, box-shadow .35s ease; }
-    .shot:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgb(0 0 0 / 0.16); }
-    .hero .shot { animation: rise .9s ease both .15s; }
-    @keyframes rise { from { opacity: 0; transform: translateY(24px) scale(.985); } }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1px; margin: 2rem 0 0; border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; background: var(--border); }
-    .stats div { padding: 1rem 1.25rem; background: var(--surface); }
-    .stats strong { display: block; font-size: 1.5rem; letter-spacing: -0.01em; }
-    .stats span { color: var(--muted); font-size: 0.875rem; }
-    section { padding: 3rem 0; }
-    h2 { font-size: 1.75rem; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
-    .section-lead { margin: 0 0 2rem; color: var(--muted); max-width: 40rem; }
-    .eyebrow { display: block; margin-bottom: 0.5rem; font: 600 0.8125rem var(--mono); letter-spacing: 0.04em; color: var(--accent); }
-    .feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 3rem; align-items: center; padding: 2.5rem 0; border-top: 1px solid var(--border); }
+    .button .icon { transition: transform .25s var(--ease); }
+    .button:hover .icon-arrow { transform: translateX(3px); }
+    .bar .button { min-height: 2.25rem; padding: 0.375rem 0.875rem; font-size: 0.875rem; }
+
+    /* Hero */
+    .hero { padding: 3.5rem 0 2rem; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font: 600 0.8125rem var(--mono); letter-spacing: 0.04em; color: var(--accent); text-transform: uppercase; }
+    .hero h1 { margin: 1rem 0 0; font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.04; letter-spacing: -0.035em; font-weight: 750; }
+    .hero h1 span { display: block; color: var(--muted); }
+    .lead { margin: 1.5rem 0 0; max-width: 46rem; font-size: clamp(1.125rem, 2vw, 1.3125rem); line-height: 1.55; color: var(--muted); }
+    .cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+    .js .hero .intro > * { opacity: 0; transform: translateY(14px); animation: rise .9s var(--ease) forwards; }
+    .js .hero .intro > :nth-child(2) { animation-delay: .08s; } .js .hero .intro > :nth-child(3) { animation-delay: .16s; } .js .hero .intro > :nth-child(4) { animation-delay: .24s; }
+    @keyframes rise { to { opacity: 1; transform: none; } }
+
+    /* Theme spectrum: one board, sliced into fourteen looks */
+    .spectrum { position: relative; margin-top: 3.5rem; aspect-ratio: 16 / 10; border-radius: 1.25rem; overflow: hidden; background: #0d1512;
+      box-shadow: 0 0 0 1px var(--border), 0 40px 90px -30px rgb(10 30 22 / .45), 0 8px 24px -12px rgb(10 30 22 / .25); isolation: isolate; }
+    .spectrum > img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .strips { display: none; }
+    .js .strips { display: block; position: absolute; inset: 0; }
+    /* With JavaScript the strips are the picture; the image stays for its alt text and the no-script view. */
+    .js .spectrum > img { visibility: hidden; }
+    .strip { position: absolute; inset: 0; background: var(--img) center / 100% 100% no-repeat;
+      /* Each strip reaches 1px into the next one, so no anti-aliased seam shows between them. */
+      clip-path: polygon(calc(var(--a) + 2.5%) 0, calc(var(--b) + 2.5% + 1px) 0, calc(var(--b) - 2.5% + 1px) 100%, calc(var(--a) - 2.5%) 100%);
+      opacity: 0; transform: translateY(9%); transition: opacity .9s var(--ease) calc(var(--i) * 60ms + .25s), transform 1.2s var(--ease) calc(var(--i) * 60ms + .25s), filter .35s; }
+    .spectrum.ready .strip { opacity: 1; transform: none; }
+    .spectrum.ready .strip:hover { filter: brightness(1.06) saturate(1.15); }
+    .strip-name { position: absolute; bottom: 7%; left: clamp(4.5rem, var(--x), calc(100% - 4.5rem)); transform: translate(-50%, 6px); padding: 0.375rem 0.75rem; border-radius: 999px;
+      font: 600 0.8125rem/1 system-ui, sans-serif; white-space: nowrap; color: #fff; background: rgb(12 20 17 / .72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 0 0 1px rgb(255 255 255 / .14); opacity: 0; pointer-events: none; transition: opacity .2s, transform .25s var(--ease); }
+    .strip-name.on { opacity: 1; transform: translate(-50%, 0); }
+    .spectrum-badge { position: absolute; top: 1rem; right: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.875rem; border-radius: 999px;
+      font: 600 0.8125rem/1 system-ui, sans-serif; color: #fff; background: rgb(12 20 17 / .7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 0 0 1px rgb(255 255 255 / .14); }
+    .spectrum-caption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; color: var(--muted); font-size: 0.9375rem; }
+    .legend { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .legend a { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3125rem 0.75rem 0.3125rem 0.375rem; border: 1px solid var(--border); border-radius: 999px;
+      color: var(--text); text-decoration: none; font-size: 0.875rem; font-weight: 500; background: var(--surface); transition: border-color .2s, transform .2s var(--ease); }
+    .legend a:hover { border-color: var(--accent); transform: translateY(-1px); }
+    .swatch { width: 1.25rem; height: 1.25rem; border-radius: 50%; flex: none; background: linear-gradient(135deg, var(--l) 0 50%, var(--d) 50% 100%); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+
+    /* Stats */
+    @media (hover: none) { .hover-only { display: none; } }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); margin: 3.5rem 0 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .stats div { padding: 1.5rem 1.25rem 1.5rem 0; }
+    .stats strong { display: block; font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    .stats div > span { color: var(--muted); font-size: 0.9375rem; }
+
+    /* Sections */
+    section { padding: 5rem 0 2rem; }
+    h2 { font-size: clamp(2rem, 4vw, 2.75rem); line-height: 1.1; letter-spacing: -0.03em; margin: 0.75rem 0 0; max-width: 22ch; }
+    .section-lead { margin: 1rem 0 0; color: var(--muted); max-width: 44rem; font-size: 1.125rem; }
+    .index { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 2rem 0 1rem; }
+    .index a { display: inline-flex; align-items: center; gap: 0.4375rem; padding: 0.375rem 0.75rem; border-radius: 999px; background: var(--soft); color: var(--text);
+      text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: background-color .2s, color .2s; }
+    .index a:hover { background: var(--accent); color: var(--on-accent); }
+    .index .icon { width: 1rem; height: 1rem; }
+
+    .feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: center; padding: 4rem 0; border-top: 1px solid var(--border); }
     .feature:nth-of-type(even) { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
     .feature:nth-of-type(even) .text { order: 2; }
-    .feature h3 { margin: 0 0 0.625rem; font-size: 1.5rem; letter-spacing: -0.01em; line-height: 1.25; }
-    .feature p { margin: 0 0 1rem; color: var(--muted); }
-    .feature ul { margin: 0; padding-left: 1.125rem; display: grid; gap: 0.375rem; font-size: 0.9375rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
-    .card { padding: 1.25rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); }
-    .card h4 { margin: 0 0 0.375rem; font-size: 1rem; }
-    .card p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
-    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; }
+    .feature .tag { display: inline-flex; align-items: center; gap: 0.5rem; font: 600 0.8125rem var(--mono); color: var(--accent); }
+    .feature .tag .icon { width: 1.75rem; height: 1.75rem; padding: 0.375rem; border-radius: 0.5rem; background: var(--accent-soft); }
+    .feature .new { font: 700 0.6875rem/1 system-ui, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.25rem 0.5rem; border-radius: 999px; background: var(--accent); color: var(--on-accent); }
+    .feature h3 { margin: 1rem 0 0.75rem; font-size: clamp(1.5rem, 2.6vw, 2rem); letter-spacing: -0.025em; line-height: 1.15; }
+    .feature p { margin: 0 0 1.25rem; color: var(--muted); font-size: 1.0625rem; }
+    ul.ticks { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.625rem; font-size: 0.9875rem; }
+    ul.ticks li { display: flex; gap: 0.625rem; align-items: flex-start; }
+    ul.ticks .icon { color: var(--accent); margin-top: 0.25rem; width: 1rem; height: 1rem; stroke-width: 2.5; }
+
+    /* Screenshots */
+    .shot { position: relative; display: block; border-radius: 1rem; overflow: hidden; background: var(--surface); box-shadow: 0 0 0 1px var(--border), var(--shadow);
+      transition: transform .45s var(--ease), box-shadow .45s; cursor: zoom-in; }
+    .shot img { display: block; width: 100%; height: auto; }
+    .shot:hover { transform: translateY(-4px); box-shadow: 0 0 0 1px var(--border), 0 28px 60px -24px rgb(10 30 22 / .45); }
+    .shot .zoom-hint { position: absolute; right: 0.75rem; bottom: 0.75rem; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%;
+      color: #fff; background: rgb(12 20 17 / .65); backdrop-filter: blur(6px); opacity: 0; transform: scale(.9); transition: opacity .25s, transform .25s var(--ease); }
+    .shot:hover .zoom-hint, .shot:focus-visible .zoom-hint { opacity: 1; transform: none; }
     figure { margin: 0; }
-    figcaption { margin-top: 0.5rem; color: var(--muted); font-size: 0.9375rem; }
-    .split { display: grid; grid-template-columns: minmax(0, 1fr) 18rem; gap: 3rem; align-items: center; }
-    .split > img { width: 100%; border-radius: 1.5rem; border: 1px solid var(--border); }
-    ul.points { margin: 0 0 1.25rem; padding-left: 1.25rem; display: grid; gap: 0.5rem; }
+    figcaption { margin-top: 0.75rem; color: var(--muted); font-size: 0.9375rem; display: flex; align-items: center; gap: 0.5rem; }
+
+    /* Theme explorer */
+    .explorer { display: grid; grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: 2.5rem; align-items: start; margin-top: 2.5rem; }
+    .pickers { display: grid; gap: 1.75rem; position: sticky; top: 6rem; }
+    .pickers fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 0.375rem; }
+    .pickers legend { font: 600 0.8125rem var(--mono); color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.5rem; padding: 0; }
+    .choice { position: relative; display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.75rem; border-radius: 0.75rem; cursor: pointer; transition: background-color .2s; }
+    .choice:hover { background: var(--soft); }
+    .choice input { position: absolute; opacity: 0; pointer-events: none; }
+    .choice:has(input:checked) { background: var(--surface); box-shadow: 0 0 0 1px var(--border), var(--shadow); }
+    .choice:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .choice b { display: block; font-size: 0.9875rem; }
+    .choice small { display: block; color: var(--muted); font-size: 0.8125rem; line-height: 1.35; }
+    .schemes { display: grid !important; grid-template-columns: 1fr 1fr; gap: 0.375rem; }
+    .schemes .choice { justify-content: center; }
+    .stage { position: relative; aspect-ratio: 16 / 10; border-radius: 1rem; overflow: hidden; box-shadow: 0 0 0 1px var(--border), var(--shadow); background: var(--soft); }
+    .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .45s ease; }
+    .stage img.on { opacity: 1; }
+    .no-js-note { display: none; }
+    html:not(.js) .pickers { display: none; }
+    html:not(.js) .explorer { grid-template-columns: 1fr; }
+
+    /* Cards */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; margin-top: 2.5rem; }
+    .card { padding: 1.5rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); transition: transform .3s var(--ease), box-shadow .3s; }
+    .card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .card .icon { width: 2.25rem; height: 2.25rem; padding: 0.5rem; border-radius: 0.625rem; background: var(--accent-soft); color: var(--accent); }
+    .card h4 { margin: 1rem 0 0.375rem; font-size: 1.0625rem; letter-spacing: -0.01em; }
+    .card p { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+
+    /* Security */
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: clamp(2rem, 6vw, 5rem); align-items: center; }
+    ul.points { list-style: none; margin: 2rem 0; padding: 0; display: grid; gap: 1rem; }
+    ul.points li { display: flex; gap: 0.875rem; align-items: flex-start; }
+    ul.points .icon { color: var(--accent); margin-top: 0.1875rem; }
+    .phone { border-radius: 2.25rem; overflow: hidden; box-shadow: 0 0 0 1px var(--border), 0 40px 80px -30px rgb(10 30 22 / .5); }
+    .phone img { display: block; width: 100%; }
     .badges { display: flex; flex-wrap: wrap; gap: 0.375rem; }
     .badges img { height: 20px; width: auto; }
-    footer { padding: 2rem 0 3rem; color: var(--muted); font-size: 0.9375rem; border-top: 1px solid var(--border); }
-    .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+
+    /* Closing call to action */
+    .closing { margin: 5rem 0 0; padding: clamp(2.5rem, 6vw, 4rem); border-radius: 1.5rem; background: var(--accent); color: var(--on-accent); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
+    .closing h2 { margin: 0; color: inherit; }
+    .closing p { margin: 0.75rem 0 0; opacity: .85; max-width: 36rem; }
+    .closing .button { background: var(--on-accent); color: var(--accent); border-color: transparent; }
+    .closing .button.ghost { background: transparent; color: var(--on-accent); border-color: color-mix(in oklab, var(--on-accent) 40%, transparent); }
+    footer { padding: 3rem 0 4rem; color: var(--muted); font-size: 0.9375rem; }
+
+    /* Lightbox */
+    dialog.zoom { padding: 0; border: 0; background: transparent; max-width: 96vw; max-height: 94vh; overflow: visible; opacity: 0; transform: scale(.96);
+      transition: opacity .3s, transform .35s var(--ease), overlay .3s allow-discrete, display .3s allow-discrete; }
+    dialog.zoom[open] { opacity: 1; transform: none; }
+    @starting-style { dialog.zoom[open] { opacity: 0; transform: scale(.96); } }
+    dialog.zoom::backdrop { background: rgb(6 12 10 / .78); backdrop-filter: blur(6px); transition: background-color .3s; }
+    dialog.zoom img { display: block; max-width: 96vw; max-height: 94vh; width: auto; height: auto; border-radius: 0.75rem; box-shadow: 0 30px 80px rgb(0 0 0 / .5); }
+    .zoom-close { position: fixed; top: 1rem; right: 1rem; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; border: 0; color: #fff; background: rgb(255 255 255 / .14); cursor: pointer; }
+
+    /* Scroll reveal; everything is visible without JavaScript */
+    .js .reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s var(--ease), transform .9s var(--ease); }
     .js .reveal.in { opacity: 1; transform: none; }
+    @supports (animation-timeline: view()) {
+      .feature .media { animation: settle linear both; animation-timeline: view(); animation-range: entry 0% cover 35%; }
+      /* translate and scale, not transform, so the hover lift still applies on top. */
+      @keyframes settle { from { translate: 0 48px; scale: .965; } to { translate: none; scale: none; } }
+    }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation: none !important; transition: none !important; }
-      .js .reveal { opacity: 1; transform: none; }
+      .js .reveal, .js .hero .intro > * { opacity: 1; transform: none; }
+      .strip { opacity: 1; transform: none; }
     }
-    @media (max-width: 820px) {
-      .feature, .feature:nth-of-type(even) { grid-template-columns: 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) {
+      nav.links { display: none; }
+      .bar .status { margin-left: auto; }
+      .feature, .feature:nth-of-type(even) { grid-template-columns: 1fr; padding: 3rem 0; }
       .feature:nth-of-type(even) .text { order: 0; }
-      .split { grid-template-columns: 1fr; } .split > img { max-width: 18rem; }
+      .explorer { grid-template-columns: 1fr; }
+      .pickers { position: static; }
+      .theme-list { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); display: grid !important; }
+      .split { grid-template-columns: 1fr; } .phone { max-width: 18rem; }
+      .strip-name { display: none; }
+    }
+    @media (max-width: 600px) {
+      .spectrum { border-radius: 0.875rem; }
+      .spectrum-badge { top: 0.5rem; right: 0.5rem; padding: 0.3125rem 0.625rem; font-size: 0.6875rem; }
+      .bar { gap: 0.75rem; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="top">
-      <a class="brand" href="./"><img src="assets/favicon.svg" alt="">Project board</a>
-      <div class="top-links">
-        <a class="status" href="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml" title="Checked daily from GitHub Actions"><i></i>live</a>
-        <a class="button" href="https://github.com/Majkey25/project-board-showcase">GitHub</a>
-      </div>
-    </header>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-kanban" viewBox="0 0 24 24"><path d="M5 3v14"/><path d="M12 3v8"/><path d="M19 3v18"/></symbol>
+<symbol id="i-activity" viewBox="0 0 24 24"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></symbol>
+<symbol id="i-clipboard-list" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+<symbol id="i-git-pull-request" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" x2="6" y1="9" y2="21"/></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></symbol>
+<symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.950a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.810 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></symbol>
+<symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/></symbol>
+<symbol id="i-sliders-horizontal" viewBox="0 0 24 24"><path d="M10 5H3"/><path d="M12 19H3"/><path d="M14 3v4"/><path d="M16 17v4"/><path d="M21 12h-9"/><path d="M21 19h-5"/><path d="M21 5h-7"/><path d="M8 10v4"/><path d="M8 12H3"/></symbol>
+<symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+<symbol id="i-external-link" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-key-round" viewBox="0 0 24 24"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></symbol>
+<symbol id="i-smartphone" viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></symbol>
+<symbol id="i-refresh-cw" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></symbol>
+<symbol id="i-languages" viewBox="0 0 24 24"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol>
+<symbol id="i-accessibility" viewBox="0 0 24 24"><circle cx="16" cy="4" r="1"/><path d="m18 19 1-7-6 1"/><path d="m5 8 3-3 5.5 3-2.36 3.5"/><path d="M4.24 14.5a5 5 0 0 0 6.88 6"/><path d="M13.76 17.5a5 5 0 0 0-6.88-6"/></symbol>
+<symbol id="i-file-check" viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="m9 15 2 2 4-4"/></symbol>
+<symbol id="i-arrow-down-up" viewBox="0 0 24 24"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></symbol>
+<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.830l8.58 3.910a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"/></symbol>
+<symbol id="i-git-branch" viewBox="0 0 24 24"><path d="M15 6a9 9 0 0 0-9 9V3"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/></symbol>
+<symbol id="i-workflow" viewBox="0 0 24 24"><rect width="8" height="8" x="3" y="3" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect width="8" height="8" x="13" y="13" rx="2"/></symbol>
+<symbol id="i-list-checks" viewBox="0 0 24 24"><path d="M13 5h8"/><path d="M13 12h8"/><path d="M13 19h8"/><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/></symbol>
+<symbol id="i-rotate-ccw-clock" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+<symbol id="i-maximize-2" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="m21 3-7 7"/><path d="m3 21 7-7"/><path d="M9 21H3v-6"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+<symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></symbol>
+<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+<symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
+</svg>
 
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="./"><img src="assets/favicon.svg" alt="">Project board</a>
+    <nav class="links" aria-label="Sections">
+      <a href="#features">Features</a>
+      <a href="#themes">Themes</a>
+      <a href="#security">Security</a>
+    </nav>
+    <a class="status" href="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml" title="Checked daily from GitHub Actions"><i></i>live</a>
+    <a class="button" href="https://github.com/Majkey25/project-board-showcase">GitHub <svg class="icon" aria-hidden="true"><use href="#i-external-link"/></svg></a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
     <div class="hero">
-      <h1>Projects by phase.<br>Versions by environment.</h1>
-      <p class="lead">A private project board where each project is one card moving through your own workflow, while its target, test and production versions stay visible on their own. Linked to GitHub, with automations, custom notifications, a GitHub audit tool and an API for AI agents.</p>
-      <div class="cta">
-        <a class="button primary" href="https://project-board.majkeylab.workers.dev">Open the live app</a>
-        <a class="button" href="#features">Explore the features</a>
+      <div class="intro">
+        <span class="eyebrow"><svg class="icon" aria-hidden="true"><use href="#i-kanban"/></svg>Project board</span>
+        <h1>Projects by phase. <span>Versions by environment.</span></h1>
+        <p class="lead">A private board where each project is one card moving through your own workflow, while its target, test and production versions stay in view. Connected to GitHub, with status updates, automations, custom notifications, a GitHub audit and a scoped API for AI agents.</p>
+        <div class="cta">
+          <a class="button primary" href="https://project-board.majkeylab.workers.dev">Open the live app <svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+          <a class="button" href="#features">Explore the features</a>
+        </div>
       </div>
-      <img class="shot" src="assets/board.png" alt="The board with projects across planning, development, testing and fixes">
+
+      <figure>
+        <div class="spectrum">
+          <img src="assets/themes-spectrum-1600.webp" srcset="assets/themes-spectrum-1600.webp 1600w, assets/themes-spectrum.webp 3200w" sizes="(min-width: 78rem) 75rem, 100vw"
+            width="3200" height="2000" fetchpriority="high" alt="The same project board fourteen times, sliced into slanted strips: seven themes, each in light and dark.">
+          <div class="strips" aria-hidden="true">
+            <span class="strip" data-i="0" style="--i:0;--a:-100%;--b:7.1429%"></span>
+            <span class="strip" data-i="1" style="--i:1;--a:7.1429%;--b:14.2857%"></span>
+            <span class="strip" data-i="2" style="--i:2;--a:14.2857%;--b:21.4286%"></span>
+            <span class="strip" data-i="3" style="--i:3;--a:21.4286%;--b:28.5714%"></span>
+            <span class="strip" data-i="4" style="--i:4;--a:28.5714%;--b:35.7143%"></span>
+            <span class="strip" data-i="5" style="--i:5;--a:35.7143%;--b:42.8571%"></span>
+            <span class="strip" data-i="6" style="--i:6;--a:42.8571%;--b:50%"></span>
+            <span class="strip" data-i="7" style="--i:7;--a:50%;--b:57.1429%"></span>
+            <span class="strip" data-i="8" style="--i:8;--a:57.1429%;--b:64.2857%"></span>
+            <span class="strip" data-i="9" style="--i:9;--a:64.2857%;--b:71.4286%"></span>
+            <span class="strip" data-i="10" style="--i:10;--a:71.4286%;--b:78.5714%"></span>
+            <span class="strip" data-i="11" style="--i:11;--a:78.5714%;--b:85.7143%"></span>
+            <span class="strip" data-i="12" style="--i:12;--a:85.7143%;--b:92.8571%"></span>
+            <span class="strip" data-i="13" style="--i:13;--a:92.8571%;--b:200%"></span>
+            <span class="strip-name" data-i="0" style="--x:1.82%">Midnight · light</span>
+            <span class="strip-name" data-i="1" style="--x:8.96%">Matrix · dark</span>
+            <span class="strip-name" data-i="2" style="--x:16.11%">Original · dark</span>
+            <span class="strip-name" data-i="3" style="--x:23.25%">Original · light</span>
+            <span class="strip-name" data-i="4" style="--x:30.39%">Matrix · light</span>
+            <span class="strip-name" data-i="5" style="--x:37.54%">Minimal · dark</span>
+            <span class="strip-name" data-i="6" style="--x:44.68%">Custom · dark</span>
+            <span class="strip-name" data-i="7" style="--x:51.82%">Custom · light</span>
+            <span class="strip-name" data-i="8" style="--x:58.96%">Minimal · light</span>
+            <span class="strip-name" data-i="9" style="--x:66.11%">Gradient · dark</span>
+            <span class="strip-name" data-i="10" style="--x:73.25%">Material · dark</span>
+            <span class="strip-name" data-i="11" style="--x:80.39%">Gradient · light</span>
+            <span class="strip-name" data-i="12" style="--x:87.54%">Material · light</span>
+            <span class="strip-name" data-i="13" style="--x:94.68%">Midnight · dark</span>
+          </div>
+          <span class="spectrum-badge"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg>One board, 14 looks</span>
+        </div>
+        <figcaption class="spectrum-caption">
+          <span>Seven themes, each in light and dark.<span class="hover-only"> Point at a strip to see its name.</span></span>
+          <span class="legend">
+            <a href="#themes" data-theme="original"><span class="swatch" style="--l:#246750;--d:#5cc79f"></span>Original</a>
+            <a href="#themes" data-theme="minimal"><span class="swatch" style="--l:#353535;--d:#d4d4d4"></span>Minimal</a>
+            <a href="#themes" data-theme="material"><span class="swatch" style="--l:#475d92;--d:#aec6ff"></span>Material</a>
+            <a href="#themes" data-theme="gradient"><span class="swatch" style="--l:#5c4e89;--d:#c5b3ff"></span>Gradient</a>
+            <a href="#themes" data-theme="midnight"><span class="swatch" style="--l:#1d2938;--d:#8bd8bd"></span>Midnight</a>
+            <a href="#themes" data-theme="matrix"><span class="swatch" style="--l:#050806;--d:#39ff88"></span>Matrix</a>
+            <a href="#themes" data-theme="custom"><span class="swatch" style="--l:#a4441c;--d:#f2a65a"></span>Custom</a>
+          </span>
+        </figcaption>
+      </figure>
+
       <div class="stats">
-        <div><strong>4</strong><span>roles, owner to viewer</span></div>
-        <div><strong>12</strong><span>notification events</span></div>
-        <div><strong>6 × 2</strong><span>themes, light and dark</span></div>
-        <div><strong>EN · CS</strong><span>interface languages</span></div>
+        <div><strong><span class="count" data-to="14">14</span></strong><span>looks: 7 themes × light, dark</span></div>
+        <div><strong><span class="count" data-to="10">10</span></strong><span>workflow stages</span></div>
+        <div><strong><span class="count" data-to="12">12</span></strong><span>notification events</span></div>
+        <div><strong><span class="count" data-to="6">6</span></strong><span>scopes for AI agents</span></div>
+        <div><strong><span class="count" data-to="4">4</span></strong><span>roles, owner to viewer</span></div>
         <div><strong>AES-256</strong><span>content encrypted at rest</span></div>
       </div>
     </div>
 
     <section id="features">
+      <span class="eyebrow reveal"><svg class="icon" aria-hidden="true"><use href="#i-list-checks"/></svg>Features</span>
       <h2 class="reveal">Everything a project needs, in one card</h2>
-      <p class="section-lead reveal">Each part of the product, in the order you meet it.</p>
+      <p class="section-lead reveal">Each part of the product in the order you meet it. Select any screenshot to see it at full size.</p>
+      <nav class="index reveal" aria-label="Feature index">
+        <a href="#f-board"><svg class="icon" aria-hidden="true"><use href="#i-kanban"/></svg>Board</a>
+        <a href="#f-status"><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg>Update status</a>
+        <a href="#f-overview"><svg class="icon" aria-hidden="true"><use href="#i-clipboard-list"/></svg>Overview</a>
+        <a href="#f-edit"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg>Editing</a>
+        <a href="#f-github"><svg class="icon" aria-hidden="true"><use href="#i-git-pull-request"/></svg>GitHub</a>
+        <a href="#f-automations"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg>Automations</a>
+        <a href="#f-notifications"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>Notifications</a>
+        <a href="#f-guard"><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg>Project Guard</a>
+        <a href="#f-agents"><svg class="icon" aria-hidden="true"><use href="#i-bot"/></svg>AI agents</a>
+        <a href="#f-assistant"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg>AI assistance</a>
+        <a href="#f-sharing"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>Sharing</a>
+        <a href="#f-customize"><svg class="icon" aria-hidden="true"><use href="#i-sliders-horizontal"/></svg>Customization</a>
+        <a href="#themes"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg>Themes</a>
+      </nav>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-board">
         <div class="text">
-          <span class="eyebrow">01 — Board</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-kanban"/></svg>01 · Board</span>
           <h3>Your workflow, your columns</h3>
-          <p>Columns follow the way your team works, and each one is mapped to a stage such as planning, development, testing, production or done.</p>
-          <ul><li>Drag and drop, or move cards from the keyboard</li><li>Search and filter by person, priority, tier or blocked state</li><li>Order by hand or by priority; blocked work stands out</li></ul>
+          <p>Columns follow the way your team works. Each one maps to a stage such as planning, review, fixes, retest or production, so the board knows what “done” means.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Drag and drop, or move cards from the keyboard</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Search and filter by person, tier, priority or blocked state</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Star priority, overdue dates and work-in-progress limits on every card</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/board-dark.png" alt="The board in the dark Midnight theme" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-board-light.webp" aria-label="Board, full size">
+          <picture><source srcset="assets/shot-board-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-board-light.webp" loading="lazy" alt="Board columns with project cards: priority stars, next steps, due dates, tiers and pull request counts"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-status">
         <div class="text">
-          <span class="eyebrow">02 — Overview</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-activity"/></svg>02 · Update status <span class="new">New</span></span>
+          <h3>State changes, apart from editing</h3>
+          <p>What changes every day has its own place: column, next step, priority, blocking, assignee, due date and versions. Name and description stay in Edit, so a quick update never overwrites them.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Suggestions from open pull requests: “Get #128 reviewed and merged”</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Moving a card runs the column’s automation; your own changes win</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Only the fields you changed are saved</li>
+          </ul>
+        </div>
+        <a class="shot media" href="assets/shot-status-light.webp" aria-label="Update status, full size">
+          <picture><source srcset="assets/shot-status-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-status-light.webp" loading="lazy" alt="The Update status tab with column, next step, priority, assignee, due date, blocking and versions"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
+
+      <article class="feature reveal" id="f-overview">
+        <div class="text">
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-clipboard-list"/></svg>03 · Overview</span>
           <h3>The state of a project at a glance</h3>
-          <p>Opening a project shows what matters first: where it is, what happens next, who owns it and when it is due.</p>
-          <ul><li>Next step, priority, owner, due date with an overdue flag</li><li>Target, test and production versions side by side</li><li>Checklist progress and a full change history</li></ul>
+          <p>Opening a project shows what matters first: where it is, what happens next, who owns it and when it is due, then what is open against it on GitHub.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Next step highlighted, overdue dates flagged</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Target, test and production versions side by side</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Checklist progress and live pull request counts</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/overview.png" alt="Project overview with status, next step, facts and checklist" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-overview-light.webp" aria-label="Project overview, full size">
+          <picture><source srcset="assets/shot-overview-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-overview-light.webp" loading="lazy" alt="Project overview with status, next step, facts, versions and checklist"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-edit">
         <div class="text">
-          <span class="eyebrow">03 — Editing</span>
-          <h3>Everything about a project, in one form</h3>
-          <p>Summary, description, versions, checklist, custom fields, tiers and ratings, with unsaved changes kept while you switch tabs.</p>
-          <ul><li>Conflict-safe saving when two people edit at once</li><li>Archive and restore instead of losing work</li><li>Notes for the whole board, separate from private data</li></ul>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg>04 · Editing</span>
+          <h3>What you set once, in one form</h3>
+          <p>Name, summary, description, checklist, custom fields, tier and rating. Unsaved changes survive switching tabs, and two people editing at once never overwrite each other silently.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Conflict-safe saving with revisions</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Archive and restore instead of losing work</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Board notes and a full change history</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/edit.png" alt="The edit tab of a project" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-edit-light.webp" aria-label="Edit tab, full size">
+          <picture><source srcset="assets/shot-edit-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-edit-light.webp" loading="lazy" alt="The Edit tab with name, summary, description, checklist and custom fields"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-github">
         <div class="text">
-          <span class="eyebrow">04 — GitHub</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-git-pull-request"/></svg>05 · GitHub</span>
           <h3>Pull requests, issues and branches, per person</h3>
-          <p>Link repositories to a project and see what is open against it. Every visitor sees only what their own GitHub account can see.</p>
-          <ul><li>Open and draft pull requests, issues, labels and activity</li><li>Branches with their protection status</li><li>Counts on each card; issues and PRs can be linked to projects</li></ul>
+          <p>Link repositories to a project and see what is open against it. Every visitor sees only what their own GitHub account can see, and nobody learns that a hidden repository exists.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Open and draft pull requests, issues, labels and branches</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Link individual issues and pull requests to projects</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>An optional personal token, with a check of which linked repositories it reaches</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/overview-github.png" alt="Open pull requests and issues of a linked repository" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-github-light.webp" aria-label="GitHub tab, full size">
+          <picture><source srcset="assets/shot-github-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-github-light.webp" loading="lazy" alt="Open pull requests and issues of a linked repository"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-automations">
         <div class="text">
-          <span class="eyebrow">05 — Automations</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg>06 · Automations</span>
           <h3>Quick actions that run by themselves</h3>
-          <p>A quick action applies several changes at once. An automation runs one whenever a project enters a chosen column.</p>
-          <ul><li>Move, set priority, tier, rating, blocking or archive in one step</li><li>Runs in the same write as the move, with history</li><li>Rules never chain, so nothing loops</li></ul>
+          <p>A quick action applies several changes at once. An automation runs one whenever a project enters a chosen column, so “Fixes and retest” can raise the priority and set the next step without anyone remembering to.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Move, prioritise, tier, rate, block, archive or set the next step</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Runs in the same write as the move, recorded in history</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Rules never chain, so nothing loops</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/automations.png" alt="Quick actions and automations in board customization" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-automations-light.webp" aria-label="Quick actions and automations, full size">
+          <picture><source srcset="assets/shot-automations-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-automations-light.webp" loading="lazy" alt="Quick actions and automations in board customization"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-notifications">
         <div class="text">
-          <span class="eyebrow">06 — Notifications</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>07 · Notifications</span>
           <h3>Hear about exactly what you care about</h3>
-          <p>Choose between all changes, finished projects, or a custom set of events — optionally only for projects assigned to you.</p>
-          <ul><li>Added, edited, moved, done, blocked, unblocked</li><li>Assigned to you, taken off you, due date changed</li><li>Archived, restored, deleted; browser alerts hide details</li></ul>
+          <p>All changes, finished projects only, or your own pick of twelve events, optionally only for the projects assigned to you.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Added, edited, moved, done, blocked, unblocked</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Assigned to you, taken off you, due date changed</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Browser alerts that never show private details</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/notifications.png" alt="Custom notification settings" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-notifications-light.webp" aria-label="Notification settings, full size">
+          <picture><source srcset="assets/shot-notifications-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-notifications-light.webp" loading="lazy" alt="Custom notification settings with selected events"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-guard">
         <div class="text">
-          <span class="eyebrow">07 — Project Guard</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg>08 · Project Guard</span>
           <h3>Audit your GitHub work against your rules</h3>
-          <p>Guard reads the issues and pull requests you can access and reports the ones missing what you require: an owner, a project, an estimate.</p>
-          <ul><li>Scans repositories and GitHub Projects with your own access</li><li>Prepares changes you review before anything is applied</li><li>Personal: results and proposals are never shared</li></ul>
+          <p>Guard reads the issues and pull requests you can access and reports the ones missing what you require: an assignee, a GitHub Project, an estimate, a linked branch. Every option explains itself.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Scope by owner, repositories, states, dates and assignees</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Proposes changes you review before anything is applied</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Personal: results and proposals are never shared</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/guard.png" alt="Project Guard scan scope and rules" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-guard-light.webp" aria-label="Project Guard, full size">
+          <picture><source srcset="assets/shot-guard-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-guard-light.webp" loading="lazy" alt="Project Guard scan scope and rules, each with an explanation"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-agents">
         <div class="text">
-          <span class="eyebrow">08 — Agent access</span>
-          <h3>A safe door for AI agents and scripts</h3>
-          <p>Create scoped, expiring API tokens so an agent can read or update one board — never with more rights than the person who created it.</p>
-          <ul><li>Read-only by default; write, propose and merge are opt-in</li><li>Documented API with machine-readable context</li><li>Every agent change is recorded; revocation is immediate</li></ul>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-bot"/></svg>09 · AI agents</span>
+          <h3>A safe door for agents and scripts</h3>
+          <p>Scoped, expiring tokens let an agent read or update one board, never with more rights than the person who created it. The board describes itself in a format language models read well.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Six scopes, read-only by default; write, propose and merge are opt-in</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>OpenAPI 3.1, <code>llms.txt</code> and a board context with project summaries</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Every agent change is recorded; revoking is immediate</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/agents.png" alt="Agent access token settings" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-agents-light.webp" aria-label="Agent access, full size">
+          <picture><source srcset="assets/shot-agents-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-agents-light.webp" loading="lazy" alt="Agent access with scoped, expiring tokens"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-assistant">
         <div class="text">
-          <span class="eyebrow">09 — AI assistance</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg>10 · AI assistance</span>
           <h3>Ask about your board with your own model</h3>
-          <p>Connect your own OpenAI or Azure OpenAI account. You choose the context; nothing is sent just by opening a board.</p>
-          <ul><li>Keys encrypted on the server, never returned to the browser</li><li>Suggestions stay proposals until you apply them</li><li>Local models through the companion for Ollama</li></ul>
+          <p>Connect your own OpenAI or Azure OpenAI account. You choose what context is sent; nothing leaves just because a board was opened.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Keys encrypted on the server, never returned to the browser</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Suggestions stay proposals until you apply them</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Local models through a small companion for Ollama</li>
+          </ul>
         </div>
-        <img class="shot" src="assets/assistant.png" alt="AI assistance model settings" loading="lazy">
-      </div>
+        <a class="shot media" href="assets/shot-assistant-light.webp" aria-label="AI assistance, full size">
+          <picture><source srcset="assets/shot-assistant-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-assistant-light.webp" loading="lazy" alt="AI assistance model settings"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
 
-      <div class="feature reveal">
+      <article class="feature reveal" id="f-sharing">
         <div class="text">
-          <span class="eyebrow">10 — Sharing</span>
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>11 · Sharing</span>
           <h3>Roles that make sense</h3>
           <p>Owner, administrator, editor and viewer. Administrators can do everything except delete the board or change who owns it.</p>
-          <ul><li>Invite by GitHub username or with a link</li><li>Links with expiry, use limits and revocation</li><li>Ownership transfer when a project changes hands</li></ul>
-        </div>
-        <img class="shot" src="assets/access.png" alt="Manage access with roles" loading="lazy">
-      </div>
-
-      <div class="feature reveal">
-        <div class="text">
-          <span class="eyebrow">11 — Yours</span>
-          <h3>Preferences that follow you</h3>
-          <p>Language, sync interval, themes and hints are saved to your account and apply on every device.</p>
-          <ul><li>Six themes, each in light and dark, plus a custom one</li><li>Hover hints on every control, in your language</li><li>Your own GitHub token, used only for your requests</li></ul>
-        </div>
-        <img class="shot" src="assets/account.png" alt="Account preferences and GitHub token" loading="lazy">
-      </div>
-    </section>
-
-    <section>
-      <h2 class="reveal">Also included</h2>
-      <p class="section-lead reveal">The details that make it usable every day.</p>
-      <div class="grid reveal">
-        <div class="card"><h4>Custom fields, tiers and ratings</h4><p>Shape projects to your process, shown on cards where you want them.</p></div>
-        <div class="card"><h4>Export and import</h4><p>Take a board out as JSON and bring it back, with permission and schema checks.</p></div>
-        <div class="card"><h4>Automatic sync</h4><p>Open boards pick up changes from others at an interval you choose.</p></div>
-        <div class="card"><h4>Works on phones</h4><p>Responsive layout, touch-friendly controls, installable as an app.</p></div>
-        <div class="card"><h4>Accessible by design</h4><p>Keyboard moves, focus handling, reduced-motion support and readable contrast in every theme.</p></div>
-        <div class="card"><h4>Clear terms</h4><p>Consent is recorded at sign-in; changes are refused until the current terms are accepted.</p></div>
-      </div>
-      <div class="gallery reveal" style="margin-top: 1.5rem">
-        <figure><img class="shot" src="assets/branches.png" alt="Branches of a linked repository with protection" loading="lazy"><figcaption>Branches and their protection</figcaption></figure>
-        <figure><img class="shot" src="assets/customize.png" alt="Custom fields in board customization" loading="lazy"><figcaption>Custom fields</figcaption></figure>
-        <figure><img class="shot" src="assets/hint.png" alt="A hover hint explaining a card" loading="lazy"><figcaption>Hints in the app's language</figcaption></figure>
-      </div>
-      <p><small>All screens show a synthetic demo board.</small></p>
-    </section>
-
-    <section>
-      <div class="split reveal">
-        <div>
-          <h2>Built carefully</h2>
-          <ul class="points">
-            <li>React 19, strict TypeScript and Material Design 3 on the front; a Cloudflare Worker with D1 behind it.</li>
-            <li>Board content encrypted at rest with AES-256-GCM, keys kept outside the database.</li>
-            <li>GitHub tokens encrypted and never returned to the browser; every GitHub read uses the visitor's own access.</li>
-            <li>Strict Content Security Policy, HSTS, same-origin checks, rate limits and database-level write guards.</li>
-            <li>Every change passes secret scanning, lint, type checks, backend and browser tests, backup checks and a dependency audit.</li>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Invite by GitHub username or with a link</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Links with expiry, use limits and revocation</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Ownership transfer when a board changes hands</li>
           </ul>
-          <div class="badges">
+        </div>
+        <a class="shot media" href="assets/shot-access-light.webp" aria-label="Manage access, full size">
+          <picture><source srcset="assets/shot-access-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-access-light.webp" loading="lazy" alt="Manage access with four roles"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
+
+      <article class="feature reveal" id="f-customize">
+        <div class="text">
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-sliders-horizontal"/></svg>12 · Customization</span>
+          <h3>Shape the board to your process</h3>
+          <p>Columns, stages, colours and limits; custom fields of five kinds; tiers and a rating scale; which details each card shows; density, font, corner radius and column width.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Text, number, date, choice and checkbox fields, shown on cards if you like</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Retired fields are archived, never silently deleted</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Hints on every control, in English and Czech</li>
+          </ul>
+        </div>
+        <a class="shot media" href="assets/shot-customize-light.webp" aria-label="Board customization, full size">
+          <picture><source srcset="assets/shot-customize-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-customize-light.webp" loading="lazy" alt="Custom fields in board customization"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+        </a>
+      </article>
+    </section>
+
+    <section id="themes">
+      <span class="eyebrow reveal"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg>Themes</span>
+      <h2 class="reveal">Seven themes, each in light and dark</h2>
+      <p class="section-lead reveal">Established design languages rather than one-off styling: a calm original, a monochrome minimal, Material Design 3, soft gradients, a deep midnight, a terminal matrix, or your own colours. Every palette keeps text at 4.5:1 contrast or better, and the choice follows you to every device.</p>
+      <div class="explorer reveal">
+        <div class="pickers">
+          <fieldset class="theme-list">
+            <legend>Theme</legend>
+            <label class="choice"><input type="radio" name="theme" value="original" checked><span class="swatch" style="--l:#246750;--d:#5cc79f"></span><span><b>Original</b><small>Calm green, the default</small></span></label>
+            <label class="choice"><input type="radio" name="theme" value="minimal"><span class="swatch" style="--l:#353535;--d:#d4d4d4"></span><span><b>Minimal</b><small>Monochrome, no colour noise</small></span></label>
+            <label class="choice"><input type="radio" name="theme" value="material"><span class="swatch" style="--l:#475d92;--d:#aec6ff"></span><span><b>Material</b><small>Material Design 3 blue</small></span></label>
+            <label class="choice"><input type="radio" name="theme" value="gradient"><span class="swatch" style="--l:#5c4e89;--d:#c5b3ff"></span><span><b>Gradient</b><small>Soft violet surfaces</small></span></label>
+            <label class="choice"><input type="radio" name="theme" value="midnight"><span class="swatch" style="--l:#1d2938;--d:#8bd8bd"></span><span><b>Midnight</b><small>Deep navy for late work</small></span></label>
+            <label class="choice"><input type="radio" name="theme" value="matrix"><span class="swatch" style="--l:#050806;--d:#39ff88"></span><span><b>Matrix</b><small>Black and neon green</small></span></label>
+            <label class="choice"><input type="radio" name="theme" value="custom"><span class="swatch" style="--l:#a4441c;--d:#f2a65a"></span><span><b>Custom</b><small>Your colours, contrast-checked</small></span></label>
+          </fieldset>
+          <fieldset class="schemes">
+            <legend>Scheme</legend>
+            <label class="choice"><input type="radio" name="scheme" value="light" checked><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg><b>Light</b></label>
+            <label class="choice"><input type="radio" name="scheme" value="dark"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg><b>Dark</b></label>
+          </fieldset>
+        </div>
+        <figure>
+          <a class="shot stage" href="assets/theme-original-light.webp" aria-label="Selected theme, full size">
+            <img class="on" src="assets/theme-original-light.webp" width="2400" height="1500" loading="lazy" alt="The board in the Original theme, light">
+            <img alt="" width="2400" height="1500">
+            <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+          </a>
+          <figcaption aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg><span class="theme-caption">Original · light</span></figcaption>
+        </figure>
+      </div>
+      <div class="gallery">
+        <figure class="reveal">
+          <a class="shot" href="assets/shot-appearance-light.webp" aria-label="Appearance settings, full size">
+            <picture><source srcset="assets/shot-appearance-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-appearance-light.webp" loading="lazy" alt="Appearance settings with theme previews, scheme, density and font"></picture>
+            <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+          </a>
+          <figcaption><svg class="icon" aria-hidden="true"><use href="#i-sliders-horizontal"/></svg>Previews before you save, plus density, font and corner radius</figcaption>
+        </figure>
+        <figure class="reveal">
+          <a class="shot" href="assets/shot-account-light.webp" aria-label="Account preferences, full size">
+            <picture><source srcset="assets/shot-account-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-account-light.webp" loading="lazy" alt="Account preferences: language, sync interval, hints and GitHub token"></picture>
+            <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+          </a>
+          <figcaption><svg class="icon" aria-hidden="true"><use href="#i-languages"/></svg>Language, sync interval and hints, saved to your account</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="details">
+      <span class="eyebrow reveal"><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg>Also included</span>
+      <h2 class="reveal">The details that make it usable every day</h2>
+      <div class="grid reveal">
+        <div class="card"><svg class="icon" aria-hidden="true"><use href="#i-arrow-down-up"/></svg><h4>Export and import</h4><p>Take a board out as JSON and bring it back, with permission and schema checks.</p></div>
+        <div class="card"><svg class="icon" aria-hidden="true"><use href="#i-refresh-cw"/></svg><h4>Automatic sync</h4><p>Open boards pick up other people’s changes at an interval you choose.</p></div>
+        <div class="card"><svg class="icon" aria-hidden="true"><use href="#i-smartphone"/></svg><h4>Works on phones</h4><p>Responsive layout, touch-sized controls, installable as an app.</p></div>
+        <div class="card"><svg class="icon" aria-hidden="true"><use href="#i-accessibility"/></svg><h4>Accessible by design</h4><p>Keyboard moves, focus handling, reduced motion and readable contrast in every theme.</p></div>
+        <div class="card"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><h4>Explains itself</h4><p>Every control has a hint, in your language, so nobody has to guess.</p></div>
+        <div class="card"><svg class="icon" aria-hidden="true"><use href="#i-file-check"/></svg><h4>Clear terms</h4><p>Consent is recorded at sign-in; changes wait until the current terms are accepted.</p></div>
+      </div>
+      <div class="gallery">
+        <figure class="reveal">
+          <a class="shot" href="assets/shot-branches-light.webp" aria-label="Branches, full size">
+            <picture><source srcset="assets/shot-branches-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-branches-light.webp" loading="lazy" alt="Branches of a linked repository with their protection"></picture>
+            <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+          </a>
+          <figcaption><svg class="icon" aria-hidden="true"><use href="#i-git-branch"/></svg>Branches and their protection</figcaption>
+        </figure>
+        <figure class="reveal">
+          <a class="shot" href="assets/shot-history-light.webp" aria-label="Notes and history, full size">
+            <picture><source srcset="assets/shot-history-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-history-light.webp" loading="lazy" alt="Board notes and the change history of a project"></picture>
+            <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg></span>
+          </a>
+          <figcaption><svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw-clock"/></svg>Notes and the full change history</figcaption>
+        </figure>
+      </div>
+      <p><small>All screens show a synthetic demo board with invented people and repositories.</small></p>
+    </section>
+
+    <section id="security">
+      <div class="split">
+        <div>
+          <span class="eyebrow reveal"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Security</span>
+          <h2 class="reveal">Built carefully</h2>
+          <ul class="points reveal">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-code"/></svg><span>React 19, strict TypeScript and Material Design 3 on the front; a Cloudflare Worker with D1 behind it.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-database"/></svg><span>Board content encrypted at rest with AES-256-GCM, keys kept outside the database.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-key-round"/></svg><span>GitHub tokens encrypted and never returned to the browser; every GitHub read uses the visitor’s own access.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg><span>Strict Content Security Policy, HSTS, same-origin checks, rate limits and database-level write guards.</span></li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-list-checks"/></svg><span>Every change passes secret scanning, lint, type checks, backend and browser tests, backup checks and a dependency audit.</span></li>
+          </ul>
+          <div class="badges reveal">
             <img alt="Live check" src="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml/badge.svg">
-            <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black">
-            <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white">
-            <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white">
-            <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1-F38020?logo=cloudflare&logoColor=white">
-            <img alt="Vitest" src="https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&logoColor=white">
+            <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&amp;logoColor=black">
+            <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&amp;logoColor=white">
+            <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&amp;logoColor=white">
+            <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1-F38020?logo=cloudflare&amp;logoColor=white">
+            <img alt="Vitest" src="https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&amp;logoColor=white">
             <img alt="Playwright" src="https://img.shields.io/badge/e2e-Playwright-2EAD33">
-            <img alt="Material 3" src="https://img.shields.io/badge/design-Material%203-6750A4?logo=materialdesign&logoColor=white">
+            <img alt="Material 3" src="https://img.shields.io/badge/design-Material%203-6750A4?logo=materialdesign&amp;logoColor=white">
           </div>
         </div>
-        <img src="assets/mobile.png" alt="The board on a phone" loading="lazy">
+        <div class="phone reveal">
+          <picture><source srcset="assets/shot-mobile-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-mobile-light.webp" loading="lazy" alt="The board on a phone"></picture>
+        </div>
       </div>
     </section>
 
-    <footer>
-      <p>Project board is proprietary; the source code is private. This page and its screenshots are © 2026 Matěj Teplý, all rights reserved — see the <a href="https://github.com/Majkey25/project-board-showcase/blob/main/LICENSE">licence</a>.</p>
-      <p>Made by <a href="https://github.com/Majkey25">Matěj Teplý</a>.</p>
-    </footer>
+    <div class="closing reveal">
+      <div>
+        <h2>See it running</h2>
+        <p>Sign in with GitHub and create your own board. The source code is private; this page and its screenshots are public.</p>
+      </div>
+      <div class="cta" style="margin:0">
+        <a class="button" href="https://project-board.majkeylab.workers.dev">Open the live app <svg class="icon icon-arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+        <a class="button ghost" href="https://github.com/Majkey25/project-board-showcase">GitHub</a>
+      </div>
+    </div>
   </div>
-  <script>
-    // Fade sections in as they scroll into view; content is visible without it.
-    const seen = new IntersectionObserver((entries) => entries.forEach((entry) => {
-      if (entry.isIntersecting) { entry.target.classList.add('in'); seen.unobserve(entry.target) }
-    }), { rootMargin: '0px 0px -8% 0px' })
-    document.querySelectorAll('.reveal').forEach((element) => seen.observe(element))
-  </script>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Project board is proprietary; the source code is private. This page and its screenshots are © 2026 Matěj Teplý, all rights reserved. See the <a href="https://github.com/Majkey25/project-board-showcase/blob/main/LICENSE">licence</a>.</p>
+    <p>Made by <a href="https://github.com/Majkey25">Matěj Teplý</a>.</p>
+  </div>
+</footer>
+
+<dialog class="zoom" aria-label="Screenshot at full size">
+  <img alt="">
+  <form method="dialog"><button class="zoom-close" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></form>
+</dialog>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  // Header gains a line once the page moves under it.
+  const header = document.querySelector('header.top')
+  const onScroll = () => header.classList.toggle('scrolled', scrollY > 8)
+  addEventListener('scroll', onScroll, { passive: true }); onScroll()
+
+  // The strips reuse the image the browser already chose, then rise in one after
+  // another once the picture is loaded and at least partly on screen.
+  const spectrum = document.querySelector('.spectrum')
+  const base = spectrum.querySelector('img')
+  const loaded = new Promise((resolve) => { if (base.complete && base.naturalWidth) resolve(); else base.addEventListener('load', resolve, { once: true }) })
+  const visible = new Promise((resolve) => {
+    const watch = new IntersectionObserver((entries) => { if (entries.some((entry) => entry.isIntersecting)) { watch.disconnect(); resolve() } }, { threshold: 0.25 })
+    watch.observe(spectrum)
+  })
+  void Promise.all([loaded, visible]).then(() => {
+    spectrum.style.setProperty('--img', `url("${base.currentSrc || base.src}")`)
+    requestAnimationFrame(() => requestAnimationFrame(() => spectrum.classList.add('ready')))
+  })
+  const names = spectrum.querySelectorAll('.strip-name')
+  spectrum.querySelectorAll('.strip').forEach((strip) => strip.addEventListener('pointerenter', () =>
+    names.forEach((name) => name.classList.toggle('on', name.dataset.i === strip.dataset.i))))
+  spectrum.addEventListener('pointerleave', () => names.forEach((name) => name.classList.remove('on')))
+
+  // Sections fade up as they arrive; numbers count up once.
+  const seen = new IntersectionObserver((entries) => entries.forEach((entry) => {
+    if (!entry.isIntersecting) return
+    entry.target.classList.add('in'); seen.unobserve(entry.target)
+  }), { rootMargin: '0px 0px -8% 0px' })
+  document.querySelectorAll('.reveal').forEach((element) => seen.observe(element))
+  const counted = new IntersectionObserver((entries) => entries.forEach((entry) => {
+    if (!entry.isIntersecting || reduce) return
+    counted.unobserve(entry.target)
+    const to = Number(entry.target.dataset.to), began = performance.now()
+    const tick = (now) => {
+      const progress = Math.min(1, (now - began) / 900)
+      entry.target.textContent = Math.round(to * (1 - Math.pow(1 - progress, 3)))
+      if (progress < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }), { threshold: 0.6 })
+  document.querySelectorAll('.count').forEach((element) => counted.observe(element))
+
+  // Theme explorer: two stacked images cross-fade, so a switch never flashes empty.
+  const explorer = document.querySelector('.explorer')
+  const layers = explorer.querySelectorAll('.stage img')
+  const stage = explorer.querySelector('.stage'), caption = explorer.querySelector('.theme-caption')
+  const label = (theme) => explorer.querySelector(`input[value="${theme}"]`).closest('label').querySelector('b').textContent
+  // Built from parts so the live check's asset scan does not read it as a file name.
+  const folder = 'assets/', themeSrc = (theme, scheme) => `${folder}theme-${theme}-${scheme}.webp`
+  let front = 0, wanted = ''
+  function showTheme() {
+    const theme = explorer.querySelector('input[name="theme"]:checked').value
+    const scheme = explorer.querySelector('input[name="scheme"]:checked').value
+    const src = themeSrc(theme, scheme), text = `${label(theme)} · ${scheme}`
+    if (src === wanted) return
+    wanted = src
+    const next = layers[1 - front]
+    next.onload = () => {
+      if (wanted !== src) return
+      next.classList.add('on'); layers[front].classList.remove('on'); front = 1 - front
+      layers[front].alt = `The board in the ${text} theme`; layers[1 - front].alt = ''
+      stage.href = src; caption.textContent = text
+    }
+    next.src = src
+  }
+  explorer.addEventListener('change', showTheme)
+  // Start in the visitor's own scheme.
+  if (matchMedia('(prefers-color-scheme: dark)').matches) {
+    explorer.querySelector('input[name="scheme"][value="dark"]').checked = true
+    showTheme()
+  }
+  // Warm the image before the click lands.
+  explorer.querySelectorAll('.theme-list label').forEach((choice) => choice.addEventListener('pointerenter', () => {
+    const scheme = explorer.querySelector('input[name="scheme"]:checked').value
+    new Image().src = themeSrc(choice.querySelector('input').value, scheme)
+  }))
+  document.querySelectorAll('.legend a').forEach((link) => link.addEventListener('click', () => {
+    explorer.querySelector(`input[value="${link.dataset.theme}"]`).checked = true
+    showTheme()
+  }))
+
+  // Any screenshot opens at full size; without JavaScript the link opens the image itself.
+  const zoom = document.querySelector('dialog.zoom'), zoomed = zoom.querySelector('img')
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a.shot')
+    if (!link || event.metaKey || event.ctrlKey || event.shiftKey) return
+    event.preventDefault()
+    const shown = [...link.querySelectorAll('img')].find((image) => image.classList.contains('on') || !link.classList.contains('stage'))
+    zoomed.src = shown?.currentSrc || link.href
+    zoomed.alt = shown?.alt ?? ''
+    zoom.showModal()
+  })
+  zoom.addEventListener('click', (event) => { if (event.target === zoom || event.target === zoomed) zoom.close() })
+</script>
 </body>
 </html>

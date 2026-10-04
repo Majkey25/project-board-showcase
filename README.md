@@ -41,9 +41,10 @@ production.
 This repository is a showcase: documentation and screenshots only. The source
 code is private.
 
-![The board with projects across the release path](assets/board.png)
+![One board in fourteen looks: seven themes, each in light and dark, sliced into strips](assets/themes-spectrum.webp)
 
-*All screenshots show a synthetic demo board.*
+*One board, fourteen looks: seven themes, each in light and dark. All screenshots
+show a synthetic demo board with invented people and repositories.*
 
 ## What it does
 
@@ -55,6 +56,9 @@ code is private.
   priority, custom fields, tiers and ratings, plus a full change history.
 - A project overview built for scanning: status, next step, the key facts,
   checklist progress and what is open on GitHub, at a glance.
+- **Update status**, separate from editing: column, next step, priority,
+  blocking, assignee, due date and versions in one place, with suggestions from
+  open pull requests. Only the fields you change are saved.
 - Drag and drop, keyboard moves, search and filters by person, priority, tier
   and blocked state. Conflict-safe saving when two people edit at once.
 
@@ -65,8 +69,8 @@ code is private.
   have a use limit and be revoked. Ownership can be transferred.
 - Custom notifications: choose exactly which events notify you (added, edited,
   moved, reached Done, blocked, assigned to you, due date changed, …).
-- Quick actions apply several changes at once, and **automations** run one
-  whenever a project enters a chosen column.
+- Quick actions apply several changes at once, including a new next step, and
+  **automations** run one whenever a project enters a chosen column.
 - Export and import of board data as JSON.
 
 **GitHub, agents and AI**
@@ -74,37 +78,42 @@ code is private.
   branches. Each person sees only what their own GitHub account can see.
 - **Project Guard** audits the issues and pull requests you can access against
   rules you set, and prepares changes you review before anything is applied.
-- **Agent access:** scoped, expiring API tokens with a documented API, so AI
+- **Agent access:** scoped, expiring API tokens with a documented API
+  (OpenAPI 3.1, `llms.txt` and a board context with project summaries), so AI
   agents and scripts can read or update a board without ever exceeding the
   permissions of the person who created them.
 - **AI assistance** with your own OpenAI or Azure OpenAI key. You choose what
   context is sent; nothing is sent by just opening a board.
 
 **Experience**
-- Six built-in themes, each with a light and a dark palette, plus a custom one.
-- English and Czech. Hover hints explain every control and can be switched off.
+- Seven themes, each with a light and a dark palette: Original, Minimal,
+  Material, Gradient, Midnight, Matrix and your own custom colours. Every
+  palette keeps text at 4.5:1 contrast or better.
+- English and Czech. Hints explain every control and can be switched off.
 - Works on phones and installs as an app from the browser.
 
 ## Screenshots
 
 | | |
 | --- | --- |
-| ![Project overview](assets/overview.png) | ![GitHub pull requests and issues on a project](assets/overview-github.png) |
-| **Project overview**: status, next step, facts and checklist progress | **GitHub**: open pull requests and issues, per repository |
-| ![Editing a project](assets/edit.png) | ![Branches](assets/branches.png) |
-| **Editing**: every field of a project in one form | **Branches** and their protection |
-| ![Automations](assets/automations.png) | ![Custom fields](assets/customize.png) |
+| ![The board](assets/theme-original-light.webp) | ![The board in the dark scheme](assets/theme-original-dark.webp) |
+| **Board**: workflow columns, priority stars and overdue dates | The same board in the **dark** scheme |
+| ![Update status](assets/shot-status-light.webp) | ![Project overview](assets/shot-overview-light.webp) |
+| **Update status**, with suggestions from pull requests | **Project overview**: next step, facts, versions and checklist |
+| ![Editing a project](assets/shot-edit-light.webp) | ![GitHub pull requests and issues](assets/shot-github-light.webp) |
+| **Editing**: what you set once | **GitHub**: pull requests and issues, per person |
+| ![Automations](assets/shot-automations-light.webp) | ![Custom fields](assets/shot-customize-light.webp) |
 | **Quick actions and automations** | **Custom fields**, tiers and ratings |
-| ![Custom notifications](assets/notifications.png) | ![Project Guard](assets/guard.png) |
-| **Custom notifications** | **Project Guard** audit scope and rules |
-| ![Agent access](assets/agents.png) | ![AI assistance](assets/assistant.png) |
+| ![Custom notifications](assets/shot-notifications-light.webp) | ![Project Guard](assets/shot-guard-light.webp) |
+| **Custom notifications** | **Project Guard** scope and rules, each explained |
+| ![Agent access](assets/shot-agents-light.webp) | ![AI assistance](assets/shot-assistant-light.webp) |
 | **Agent access**: scoped, expiring tokens | **AI assistance** with your own model |
-| ![Manage access](assets/access.png) | ![Your account](assets/account.png) |
-| **Roles and sharing** | **Preferences** and your own GitHub token |
-| ![Dark theme](assets/board-dark.png) | ![Hover hint on a card](assets/hint.png) |
-| **Dark theme** (Midnight) | **Hover hints** in the app's language |
+| ![Manage access](assets/shot-access-light.webp) | ![Appearance](assets/shot-appearance-light.webp) |
+| **Roles and sharing** | **Appearance**: themes with previews |
+| ![Branches](assets/shot-branches-light.webp) | ![Your account](assets/shot-account-light.webp) |
+| **Branches** and their protection | **Preferences** and your own GitHub token |
 
-<p align="center"><img src="assets/mobile.png" alt="The board on a phone" width="320"></p>
+<p align="center"><img src="assets/shot-mobile-light.webp" alt="The board on a phone" width="320"></p>
 
 ## How it is built
 
