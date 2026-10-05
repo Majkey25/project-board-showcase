@@ -158,6 +158,9 @@ curl -s -o /dev/null -w "%{http_code}\n" https://project-board.majkeylab.workers
 
 ## Security and privacy
 
+- [App privacy, terms and operator contact](https://project-board.majkeylab.workers.dev/privacy).
+- [Website privacy](https://majkey25.github.io/project-board-showcase/#privacy) covers GitHub Pages hosting. The showcase loads its images locally and sets no analytics or advertising cookies.
+- [Icon licences](third-party-notices.txt) cover the Lucide and Feather-derived icons used by the showcase.
 - Board content is encrypted at rest with AES-256-GCM. The keys live outside
   the database, so a leaked database dump does not reveal board content. This
   is server-side encryption, not end-to-end encryption.
