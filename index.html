@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
   <title>Project board: projects by phase, versions by environment</title>
   <meta name="description" content="A private project board that keeps the phase a project is in separate from the versions that are deployed. Status updates, GitHub pull requests, automations, notifications, Project Guard, seven themes and a scoped API for AI agents.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -52,8 +53,6 @@
     nav.links a { color: var(--muted); text-decoration: none; font-size: 0.9375rem; font-weight: 500; padding: 0.375rem 0.75rem; border-radius: 999px; transition: color .2s, background-color .2s; }
     nav.links a:hover { color: var(--text); background: var(--soft); }
     .status { display: inline-flex; align-items: center; gap: 0.5rem; font: 500 0.8125rem var(--mono); color: var(--muted); text-decoration: none; }
-    .status i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #2ea44f; animation: pulse 2.4s infinite; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgb(46 164 79 / .5); } 70% { box-shadow: 0 0 0 0.5rem rgb(46 164 79 / 0); } 100% { box-shadow: 0 0 0 0 rgb(46 164 79 / 0); } }
 
     /* Buttons */
     .button { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 2.75rem; padding: 0.625rem 1.25rem; border-radius: 999px; border: 1px solid var(--border);
@@ -164,7 +163,7 @@
     .phone { border-radius: 2.25rem; overflow: hidden; max-height: 34rem; box-shadow: 0 0 0 1px var(--border), 0 40px 80px -30px rgb(10 30 22 / .5); }
     .phone img { display: block; width: 100%; }
     .badges { display: flex; flex-wrap: wrap; gap: 0.375rem; }
-    .badges img { height: 20px; width: auto; }
+    .badges span { padding: 0.125rem 0.5rem; border: 1px solid var(--border); border-radius: 0.25rem; font-size: 0.8125rem; color: var(--muted); }
 
     /* Closing call to action */
     .closing { margin: 4rem 0 0; padding: clamp(2.5rem, 6vw, 4rem); border-radius: 1.5rem; background: var(--accent); color: var(--on-accent); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
@@ -259,7 +258,7 @@
       <a href="#themes">Themes</a>
       <a href="#security">Security</a>
     </nav>
-    <a class="status" href="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml" title="Checked daily from GitHub Actions"><i></i>live</a>
+    <a class="status" href="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml" title="View the latest daily check result">checks</a>
     <a class="button" href="https://github.com/Majkey25/project-board-showcase">GitHub <svg class="icon" aria-hidden="true"><use href="#i-external-link"/></svg></a>
   </div>
 </header>
@@ -643,14 +642,8 @@
             <li><svg class="icon" aria-hidden="true"><use href="#i-list-checks"/></svg><span>Every change passes secret scanning, lint, type checks, backend and browser tests, backup checks and a dependency audit.</span></li>
           </ul>
           <div class="badges reveal">
-            <img alt="Live check" src="https://github.com/Majkey25/project-board-showcase/actions/workflows/live-check.yml/badge.svg">
-            <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&amp;logoColor=black">
-            <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&amp;logoColor=white">
-            <img alt="Vite" src="https://img.shields.io/badge/Vite-8-646CFF?logo=vite&amp;logoColor=white">
-            <img alt="Cloudflare Workers" src="https://img.shields.io/badge/Cloudflare-Workers%20%2B%20D1-F38020?logo=cloudflare&amp;logoColor=white">
-            <img alt="Vitest" src="https://img.shields.io/badge/tested%20with-Vitest-6E9F18?logo=vitest&amp;logoColor=white">
-            <img alt="Playwright" src="https://img.shields.io/badge/e2e-Playwright-2EAD33">
-            <img alt="Material 3" src="https://img.shields.io/badge/design-Material%203-6750A4?logo=materialdesign&amp;logoColor=white">
+            <span>React 19</span><span>TypeScript</span><span>Vite 8</span><span>Cloudflare Workers + D1</span>
+            <span>Vitest</span><span>Playwright</span><span>Material 3</span>
           </div>
         </div>
         <div class="phone reveal">
@@ -674,8 +667,16 @@
 
 <footer>
   <div class="wrap">
-    <p>Project board is proprietary; the source code is private. This page and its screenshots are © 2026 Matěj Teplý, all rights reserved. See the <a href="https://github.com/Majkey25/project-board-showcase/blob/main/LICENSE">licence</a>.</p>
-    <p>Made by <a href="https://github.com/Majkey25">Matěj Teplý</a>.</p>
+    <p>Project board is proprietary; the source code is private. This page and its screenshots are © 2026 Matěj Teplý, all rights reserved. See the <a href="https://github.com/Majkey25/project-board-showcase/blob/main/LICENSE">licence</a> and <a href="third-party-notices.txt">icon licences</a>.</p>
+    <p><a href="#privacy">Website privacy</a> · <a href="https://project-board.majkeylab.workers.dev/privacy">App privacy and terms</a> · <a href="https://project-board.majkeylab.workers.dev/privacy#rights">Data requests and account closure</a></p>
+    <section id="privacy" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">Website privacy</h2>
+      <p>Updated 5 October 2026. This showcase is operated by Matěj Teplý. Contact <a href="mailto:majkeylab@gmail.com">majkeylab@gmail.com</a>; the <a href="https://project-board.majkeylab.workers.dev/privacy">operator's address and full app notice</a> are available without signing in.</p>
+      <p>This page has no forms, advertising, analytics, cookies or browser storage set by its code. Its fonts are system fonts and its images are served with the page. No optional tracking is enabled, so no cookie consent banner is needed for these features.</p>
+      <p>GitHub Pages hosts this page and processes visitor IP addresses for security. GitHub controls that processing, retention and international transfers under its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>. Opening external links sends you to the chosen provider. The separate Project board app has its own sign-in, storage and privacy notice linked above.</p>
+      <p>If you email the operator, your address and message are used to respond and handle the request, based on the legitimate interest in providing support and, for statutory rights requests, legal obligations. Correspondence is kept only while needed to resolve the matter or meet an applicable legal obligation. Do not send passwords, tokens or unnecessary sensitive information. Ask the contact above about access, correction, deletion, restriction or objection. You may complain to the <a href="https://uoou.gov.cz/">Czech Office for Personal Data Protection</a> or your local supervisory authority.</p>
+      <p>The showcase and Project board pilot are free, with no checkout or subscription. Optional AI providers can charge users of the app under their own terms. No marketing emails are sent. All example people and repositories shown here are synthetic.</p>
+    </section>
   </div>
 </footer>
 
