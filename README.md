@@ -76,6 +76,12 @@ show a synthetic demo board with invented people and repositories.*
 **GitHub, agents and AI**
 - Link repositories to projects and see their pull requests, issues and
   branches. Each person sees only what their own GitHub account can see.
+- Link a specific issue or pull request by URL. It appears on the project card
+  by default; **Appearance → Linked GitHub work** can show separate movable
+  cards or both. Separate placement survives reload and never changes GitHub state.
+- A permitted personal token can read company repositories without installing
+  this App on those repositories. Company token approval, SSO and access policies
+  still apply; basic issue linking does not request GitHub Projects permissions.
 - **Project Guard** audits the issues and pull requests you can access against
   rules you set, and prepares changes you review before anything is applied.
 - **Agent access:** scoped, expiring API tokens with a documented API
@@ -112,6 +118,8 @@ show a synthetic demo board with invented people and repositories.*
 | **Roles and sharing** | **Appearance**: themes with previews |
 | ![Branches](assets/shot-branches-light.webp) | ![Your account](assets/shot-account-light.webp) |
 | **Branches** and their protection | **Preferences** and your own GitHub token |
+| ![Linked work on project cards and separate issue cards](assets/shot-linked-work-light.png) | ![Linked work in dark mode](assets/shot-linked-work-dark.png) |
+| **Linked work**: previews and independent issue cards together | The same synthetic example in **dark** mode |
 
 <p align="center"><img src="assets/shot-mobile-light.webp" alt="The board on a phone" width="320"></p>
 

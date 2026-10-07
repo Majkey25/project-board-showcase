@@ -301,6 +301,7 @@
         <a href="#f-overview"><svg class="icon" aria-hidden="true"><use href="#i-clipboard-list"/></svg>Overview</a>
         <a href="#f-edit"><svg class="icon" aria-hidden="true"><use href="#i-pencil"/></svg>Editing</a>
         <a href="#f-github"><svg class="icon" aria-hidden="true"><use href="#i-git-pull-request"/></svg>GitHub</a>
+        <a href="#f-linked-work"><svg class="icon" aria-hidden="true"><use href="#i-git-pull-request"/></svg>Linked work</a>
         <a href="#f-automations"><svg class="icon" aria-hidden="true"><use href="#i-zap"/></svg>Automations</a>
         <a href="#f-notifications"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg>Notifications</a>
         <a href="#f-guard"><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg>Project Guard</a>
@@ -397,6 +398,25 @@
         </div>
         <a class="shot media" href="assets/shot-github-light.webp" style="--w: 896px" aria-label="GitHub tab, full size">
           <picture><source srcset="assets/shot-github-dark.webp" media="(prefers-color-scheme: dark)"><img src="assets/shot-github-light.webp" width="1792" height="2304" loading="lazy" alt="Open pull requests of a linked repository, the token status and linking controls"></picture>
+          <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg>Full size</span>
+        </a>
+      </article>
+
+      <article class="feature reveal" id="f-linked-work">
+        <div class="text">
+          <span class="tag"><svg class="icon" aria-hidden="true"><use href="#i-git-pull-request"/></svg>Linked GitHub work</span>
+          <h3>Project previews, issue cards, or both</h3>
+          <p>After linking its repository, paste an issue or pull request URL into a project's GitHub tab. Linked work appears on its project card by default. In Appearance, choose separate issue cards or show both views together.</p>
+          <ul class="ticks">
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Issue identity, title and GitHub state stay visible while scanning</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Separate cards move by desktop drag or a keyboard/mobile column picker</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Independent placement survives reload; moving a card never closes the GitHub issue</li>
+            <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Each person chooses their view and sees only work their own GitHub access permits</li>
+          </ul>
+          <p>A permitted personal token can supply company repository access without installing this App on those repositories. Company token approval and SSO policies still apply. Basic linking uses issue/PR access; GitHub Project audits require additional permissions.</p>
+        </div>
+        <a class="shot media" href="assets/shot-linked-work-light.png" style="--w: 896px" aria-label="Linked work in both views, full size">
+          <picture><source srcset="assets/shot-linked-work-dark.png" media="(prefers-color-scheme: dark)"><img src="assets/shot-linked-work-light.png" width="1280" height="996" loading="lazy" alt="Synthetic Aurora board with an issue preview on its project and an independent issue card in Development"></picture>
           <span class="zoom-hint" aria-hidden="true"><svg class="icon"><use href="#i-maximize-2"/></svg>Full size</span>
         </a>
       </article>
